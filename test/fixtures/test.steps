@@ -1,0 +1,7 @@
+Step: login via password
+    ai: input user name with value "username"
+    ai: input password with value "password"
+    ai: click button with text "Login"
+
+Step: check that user is logged in
+    ai: check it shows user name "John Doe" in the header

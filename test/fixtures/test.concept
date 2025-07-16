@@ -1,0 +1,9 @@
+Concept: LoginPage
+
+  Behavior: login
+    ai: input "username" in the username field
+    ai: input "password" in the password field
+    ai: click the login button
+
+  Behavior: logout
+    ai: click the logout button
