@@ -16,10 +16,13 @@ importers:
         version: 1.0.1(@cucumber/cucumber@11.3.0)(@cucumber/messages@27.2.0)
       '@midscene/web':
         specifier: ^0.18.0
-        version: 0.18.2(luxon@3.6.1)(playwright@1.54.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.25.76)
+        version: 0.18.2(@playwright/test@1.54.1)(luxon@3.6.1)(playwright@1.54.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.25.76)
       '@modelcontextprotocol/sdk':
         specifier: ^1.13.0
         version: 1.15.1
+      '@playwright/test':
+        specifier: ^1.54.1
+        version: 1.54.1
       app-root-path:
         specifier: ^3.1.0
         version: 3.1.0
@@ -715,6 +718,11 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@playwright/test@1.54.1':
+    resolution: {integrity: sha512-FS8hQ12acieG2dYSksmLOF7BNxnVf2afRJdCuM1eMSxj6QTSE6G4InGF7oApGgDb65MX7AwMVlIkpru0yZA4Xw==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@rc-component/async-validator@5.0.4':
     resolution: {integrity: sha512-qgGdcVIF604M9EqjNF0hbUTz42bz/RDtxWdWuU5EQe3hi7M8ob54B6B35rOsvX5eSvIHIzT9iH1R3n+hk3CGfg==}
@@ -3847,7 +3855,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@midscene/web@0.18.2(luxon@3.6.1)(playwright@1.54.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.25.76)':
+  '@midscene/web@0.18.2(@playwright/test@1.54.1)(luxon@3.6.1)(playwright@1.54.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.25.76)':
     dependencies:
       '@midscene/core': 0.18.2(luxon@3.6.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.25.76)
       '@midscene/shared': 0.18.2
@@ -3867,6 +3875,8 @@ snapshots:
       semver: 7.5.2
       socket.io: 4.8.1
       socket.io-client: 4.8.1
+    optionalDependencies:
+      '@playwright/test': 1.54.1
     transitivePeerDependencies:
       - bufferutil
       - date-fns
@@ -3900,6 +3910,10 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@playwright/test@1.54.1':
+    dependencies:
+      playwright: 1.54.1
 
   '@rc-component/async-validator@5.0.4':
     dependencies:
