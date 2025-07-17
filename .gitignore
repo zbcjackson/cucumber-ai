@@ -10,3 +10,9 @@
 
 # testing
 /config.json
+/midscene_run
+/cache
+/test-result
+
+.env
+

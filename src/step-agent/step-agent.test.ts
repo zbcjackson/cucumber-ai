@@ -4,15 +4,17 @@ import { StepAgent } from "./index";
 import "dotenv/config";
 import * as ConceptLoader from "../step-loader/concept-loader";
 import * as StepLoader from "../step-loader/step-loader";
+import {DataAgent} from "../data-agent";
 
 vi.mock("../step-loader/step-loader");
 vi.mock("../step-loader/concept-loader");
 describe("Step Agent", () => {
   let uiAgent: UIAgent;
+  let dataAgent: DataAgent;
   let stepAgent: StepAgent;
   beforeEach(() => {
     uiAgent = {
-      init: vi.fn(),
+      start: vi.fn(),
       ai: vi.fn(),
       aiTap: vi.fn(),
       aiInput: vi.fn(),
@@ -21,7 +23,14 @@ describe("Step Agent", () => {
       aiKeyboardPress: vi.fn(),
       aiAssert: vi.fn(),
     } as unknown as UIAgent;
+    dataAgent = {
+      start: vi.fn(),
+      stop: vi.fn(),
+      ask: vi.fn(),
+    } as unknown as DataAgent;
     stepAgent = new StepAgent();
+    stepAgent.setUIAgent(uiAgent);
+    stepAgent.setDataAgent(dataAgent);
     vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([]);
   });
   afterEach(() => {
@@ -41,7 +50,7 @@ describe("Step Agent", () => {
         ],
       },
     ]);
-    stepAgent.start();
+    await stepAgent.start();
     await stepAgent.executeStep("add");
     expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
   });
@@ -59,7 +68,7 @@ describe("Step Agent", () => {
         ],
       },
     ]);
-    stepAgent.start();
+    await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
     expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
   });
@@ -77,7 +86,7 @@ describe("Step Agent", () => {
         ],
       },
     ]);
-    stepAgent.start();
+    await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
     expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
   });
@@ -95,7 +104,7 @@ describe("Step Agent", () => {
         ],
       },
     ]);
-    stepAgent.start();
+    await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
     expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
   });
@@ -132,7 +141,7 @@ describe("Step Agent", () => {
         ],
       },
     ]);
-    stepAgent.start();
+    await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
     expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
   }, 300000);

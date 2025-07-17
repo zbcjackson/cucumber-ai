@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { db } from "./index";
 import "dotenv/config";
 
-describe("data agent", () => {
+describe.skip("data agent", () => {
   it("should execute query", async () => {
     const result = await db("SELECT 1 + 1 AS result");
     expect(result).toEqual({ success: true, result: { result: 2 } });

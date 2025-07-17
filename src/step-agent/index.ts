@@ -27,8 +27,8 @@ export class StepAgent {
   private readonly llm: LLM;
   private readonly cache: Cache;
   private readonly driver: Driver;
-  private readonly uiAgent: UIAgent;
-  private readonly dataAgent: DataAgent;
+  private uiAgent: UIAgent;
+  private dataAgent: DataAgent;
   private context: Record<string, string>;
 
   constructor(
@@ -44,6 +44,20 @@ export class StepAgent {
 
   getDriver(): Driver {
     return this.driver;
+  }
+
+  getUIAgent(): UIAgent {
+    return this.uiAgent;
+  }
+  setUIAgent(uiAgent: UIAgent) {
+    this.uiAgent = uiAgent;
+  }
+
+  getDataAgent(): DataAgent {
+    return this.dataAgent;
+  }
+  setDataAgent(dataAgent: DataAgent) {
+    this.dataAgent = dataAgent;
   }
 
   async start() {

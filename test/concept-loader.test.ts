@@ -1,7 +1,6 @@
 import * as path from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadConcepts } from "../src/step-loader/concept-loader";
-import { loadSteps } from "../src/step-loader/step-loader";
 
 describe("Concept Loader", () => {
   test("should load concept definitions from a specified file", () => {

@@ -10,6 +10,8 @@ import {
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
 import { LLM } from "../llm/openai";
 import { Cache } from "../cache";
+import {join} from "node:path";
+import { path as rootPath } from "app-root-path";
 
 interface Config {
   mcpServer: Record<
@@ -56,7 +58,7 @@ export class DataAgent {
   constructor(private options: DatabaseAgentOptions = {}) {
     this.started = false;
     this.cache = new Cache("data-agent");
-    this.config = require("../../../config.json") as Config;
+    this.config = require(join(rootPath, "config.json")) as Config;
     this.llm = new LLM();
   }
 
