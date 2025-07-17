@@ -1,2 +1,12 @@
-/node_modules
+#idea
 /.idea
+
+# dependencies
+/node_modules
+
+# production
+/dist
+*.tsbuildinfo
+
+# testing
+/config.json
