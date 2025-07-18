@@ -9,6 +9,7 @@ import { UIAgent } from "../ui-agent";
 import { LLM } from "../llm/openai";
 import { Driver } from '../drivers/driver';
 import { Cache } from '../cache';
+import "dotenv/config"
 
 interface MatchedText {
   text: string;
