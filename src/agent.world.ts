@@ -4,7 +4,6 @@ import type { IWorldOptions } from '@cucumber/cucumber/lib/support_code_library_
 import { World } from '@cucumber/cucumber';
 
 export interface Options {
-  webUrl?: string;
   headless?: boolean;
   logging?: boolean;
   disableCache?: boolean;
