@@ -1,5 +1,8 @@
-import { defineStep } from "@cucumber/cucumber";
+import {defineStep, setDefaultTimeout, setWorldConstructor} from "@cucumber/cucumber";
 import { AgentWorld } from './agent.world';
+
+setWorldConstructor(AgentWorld);
+setDefaultTimeout(600 * 1000);
 
 defineStep(/^(.*)$/, async function (this: AgentWorld, stepText: string) {
   await this.agent.executeStep(stepText);

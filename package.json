@@ -27,6 +27,9 @@
     "test": "vitest",
     "prepublishOnly": "pnpm build"
   },
+  "bin": {
+    "cucumber-ai": "bin/cucumber-js.js"
+  },
   "dependencies": {
     "@cucumber/cucumber": "^11.2.0",
     "@cucumber/pretty-formatter": "^1.0.1",
