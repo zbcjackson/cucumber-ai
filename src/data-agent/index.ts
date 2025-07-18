@@ -12,6 +12,7 @@ import { LLM } from "../llm/openai";
 import { Cache } from "../cache";
 import {join} from "node:path";
 import { path as rootPath } from "app-root-path";
+import fs from "node:fs";
 
 interface Config {
   mcpServer: Record<
@@ -58,7 +59,12 @@ export class DataAgent {
   constructor(private options: DatabaseAgentOptions = {}) {
     this.started = false;
     this.cache = new Cache("data-agent");
-    this.config = require(join(rootPath, "config.json")) as Config;
+    const configPath = join(rootPath, "config.json");
+    if (fs.existsSync(configPath)) {
+      this.config = require(configPath) as Config;
+    } else {
+      this.config = {mcpServer: {}}
+    }
     this.llm = new LLM();
   }
 
