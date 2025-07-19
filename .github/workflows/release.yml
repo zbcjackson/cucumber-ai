@@ -46,3 +46,8 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           files: ${{ steps.package-info.outputs.tarball_name }}
+
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
