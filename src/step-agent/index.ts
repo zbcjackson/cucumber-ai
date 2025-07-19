@@ -94,6 +94,9 @@ export class StepAgent {
         `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.context)}`,
       );
       switch (action.name) {
+        case "open":
+          await this.driver.open(text);
+          break;
         case "ai":
           await this.uiAgent.ai(text);
           break;
