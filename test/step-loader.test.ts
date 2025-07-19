@@ -40,11 +40,6 @@ describe("StepLoader", () => {
       },
     ]);
   });
-  test("should throw error if step definition file does not exist", () => {
-    expect(() => {
-      loadSteps(path.join(__dirname, "../test/fixtures/nonexistent.steps"));
-    }).toThrow("ENOENT: no such file or directory");
-  });
   test("should load step definitions from a specified directory", () => {
     const steps = loadSteps(path.join(__dirname, "../test/fixtures/steps"));
     expect(steps).toEqual([

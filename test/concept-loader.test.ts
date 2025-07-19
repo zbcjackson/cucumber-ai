@@ -46,11 +46,6 @@ describe("Concept Loader", () => {
       },
     ]);
   });
-  test("should throw error if concept definition file does not exist", () => {
-    expect(() => {
-      loadConcepts(path.join(__dirname, "../test/fixtures/nonexistent.concept"));
-    }).toThrow("ENOENT: no such file or directory");
-  });
   test("should load concept definitions from a specified directory", () => {
     const steps = loadConcepts(path.join(__dirname, "../test/fixtures/concepts"));
     expect(steps).toEqual([

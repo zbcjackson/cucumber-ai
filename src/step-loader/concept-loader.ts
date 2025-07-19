@@ -9,6 +9,9 @@ export function loadConcepts(path?: string): Concept[] {
   if (!loadPath) {
     loadPath = join(rootPath, "concepts");
   }
+  if (!fs.existsSync(loadPath)) {
+    throw new Error(`Concept file or directory does not exist: ${loadPath}`);
+  }
   if (fs.lstatSync(loadPath).isDirectory()) {
     const files = glob.sync(join(loadPath, "/**/*.concept"));
     return files.map((file) => loadFromFile(file));

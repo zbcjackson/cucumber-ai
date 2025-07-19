@@ -9,6 +9,9 @@ export function loadSteps(path?: string): Step[] {
   if (!loadPath) {
     loadPath = join(rootPath, "steps");
   }
+  if (!fs.existsSync(loadPath)) {
+    throw new Error(`Step definition file or directory does not exist: ${loadPath}`);
+  }
   if (fs.lstatSync(loadPath).isDirectory()) {
     const files = glob.sync(join(loadPath, "/**/*.steps"));
     return files.flatMap((file) => loadFromFile(file));
