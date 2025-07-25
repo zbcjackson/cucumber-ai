@@ -13,7 +13,8 @@ export class LLM {
       apiKey: process.env.OPENAI_API_KEY,
       baseURL: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
       defaultHeaders: {
-        "X-Title": "AI Test",
+        "HTTP-Referrer": "https://github.com/zbcjackson/cucumber-ai",
+        "X-Title": "cucumber-ai",
       },
     });
   }
