@@ -45,6 +45,9 @@ describe("ConceptParser", () => {
         'Only one concept could be defined: "Concept: MainPage"',
       ),
     );
+    test("concept name should be defined before behaviors", () => {
+      expect(() => parseConcept("Behavior: login")).toThrow("Concept name should be defined before behaviors");
+    });
   });
   describe("behaviors", () => {
     test(

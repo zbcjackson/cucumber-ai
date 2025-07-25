@@ -28,6 +28,9 @@ export function parseConcept(conceptDefinition: string): Concept {
       continue;
     }
     if (trimmed.startsWith("Behavior:")) {
+      if (concept.name === "") {
+        throw new Error("Concept name should be defined before behaviors");
+      }
       concept.behaviors.push({
         type: "behavior",
         text: extractBehaviorText(trimmed),
