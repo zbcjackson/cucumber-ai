@@ -1,14 +1,26 @@
 {
   "name": "cucumber-ai",
-  "version": "0.9.14",
+  "version": "0.9.15",
   "description": "Write automated tests using natural language",
   "homepage": "https://github.com/zbcjackson/cucumber-ai",
-  "keywords": ["cucumber", "ai", "testing", "automation", "playwright", "natural language", "bdd", "tests", "gherkin"],
+  "keywords": [
+    "cucumber",
+    "ai",
+    "testing",
+    "automation",
+    "playwright",
+    "natural language",
+    "bdd",
+    "tests",
+    "gherkin"
+  ],
   "author": "Jackson Zhang <zbcjackson@gmail.com>",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "lint": "biome check",
