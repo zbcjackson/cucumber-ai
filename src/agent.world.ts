@@ -9,10 +9,10 @@ export interface Options {
   disableCache?: boolean;
 }
 
-export class AgentWorld extends World<Options> {
+export class AgentWorld<T = unknown> extends World<T & Options> {
   private readonly stepAgent: StepAgent;
 
-  constructor(options: IWorldOptions<Options>) {
+  constructor(options: IWorldOptions<T & Options>) {
     super(options);
     this.stepAgent = new StepAgent({
       headless: this.parameters.headless,
