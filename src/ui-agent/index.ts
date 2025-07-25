@@ -9,7 +9,7 @@ export class UIAgent {
 
   setDriver(driver: Driver) {
     if (this.started) {
-      throw new Error("Cannot change driver after agent has started");
+      throw new Error("UI Agent has already started, cannot set driver.");
     }
     this.driver = driver;
   }
