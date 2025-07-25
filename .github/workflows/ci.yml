@@ -1,11 +1,12 @@
 name: ci
+
 on:
   push:
     branches:
-      - *
+      - "**"
   pull_request:
     branches:
-      - *
+      - "**"
 
 jobs:
   build:
@@ -19,7 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
       - name: Build
@@ -36,7 +37,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
       - name: Lint
@@ -60,7 +61,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
       - name: Test
