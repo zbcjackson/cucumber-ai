@@ -63,3 +63,13 @@ jobs:
 
       - name: Publish to npm
         run: pnpm publish --no-git-checks --ignore-scripts
+
+      - name: Bump patch version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          pnpm version patch --no-git-tag-version
+          git add package.json
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          git commit -m ":bookmark: ${PACKAGE_VERSION} [skip ci]"
+          git push origin HEAD:${{ github.ref_name }}
