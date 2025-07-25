@@ -1,10 +1,10 @@
 import * as path from "node:path";
 import { describe, expect, test } from "vitest";
-import { loadSteps } from "../src/step-loader/step-loader";
+import { loadSteps } from "../../src/step-loader/step-loader";
 
 describe("StepLoader", () => {
   test("should load step definitions from a specified file", () => {
-    const steps = loadSteps(path.join(__dirname, "../test/fixtures/test.steps"));
+    const steps = loadSteps(path.join(__dirname, "../fixtures/test.steps"));
     expect(steps).toEqual([
       {
         text: "login via password",
@@ -41,7 +41,7 @@ describe("StepLoader", () => {
     ]);
   });
   test("should load step definitions from a specified directory", () => {
-    const steps = loadSteps(path.join(__dirname, "../test/fixtures/steps"));
+    const steps = loadSteps(path.join(__dirname, "../fixtures/steps"));
     expect(steps).toEqual([
       {
         text: "one",

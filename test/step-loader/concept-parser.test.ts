@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Concept, parseConcept } from "./concept-parser";
+import { Concept, parseConcept } from "../../src/step-loader/concept-parser";
 
 function testConceptParser(conceptDefinition: string, expected: Concept) {
   return () => {

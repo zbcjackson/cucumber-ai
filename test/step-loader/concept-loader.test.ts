@@ -1,5 +1,5 @@
 import {afterEach, describe, expect, test, vi} from "vitest";
-import {loadConcepts} from "./concept-loader";
+import {loadConcepts} from "../../src/step-loader/concept-loader";
 import path from "node:path";
 import {vol} from "memfs";
 

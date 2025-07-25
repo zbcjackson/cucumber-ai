@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { db } from "./index";
+import { db } from "../src/data-agent";
 import "dotenv/config";
 
 describe.skip("data agent", () => {

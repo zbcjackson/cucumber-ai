@@ -1,10 +1,10 @@
 import * as path from "node:path";
 import { describe, expect, test } from "vitest";
-import { loadConcepts } from "../src/step-loader/concept-loader";
+import { loadConcepts } from "../../src/step-loader/concept-loader";
 
 describe("Concept Loader", () => {
   test("should load concept definitions from a specified file", () => {
-    const steps = loadConcepts(path.join(__dirname, "../test/fixtures/test.concept"));
+    const steps = loadConcepts(path.join(__dirname, "../fixtures/test.concept"));
     expect(steps).toEqual([
       {
         name: "LoginPage",
@@ -47,7 +47,7 @@ describe("Concept Loader", () => {
     ]);
   });
   test("should load concept definitions from a specified directory", () => {
-    const steps = loadConcepts(path.join(__dirname, "../test/fixtures/concepts"));
+    const steps = loadConcepts(path.join(__dirname, "../fixtures/concepts"));
     expect(steps).toEqual([
       {
         name: "One",

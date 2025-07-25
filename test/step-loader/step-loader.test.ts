@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import {describe, expect, test, vi, beforeEach, afterEach} from "vitest";
-import { loadSteps } from "./step-loader";
+import { loadSteps } from "../../src/step-loader/step-loader";
 import { vol } from "memfs";
 
 vi.mock('node:fs')
