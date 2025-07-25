@@ -185,8 +185,12 @@ export class StepAgent {
       },
     ];
     const message = await this.llm.ask(messages);
-    const result = JSON.parse(message.content);
-    if (message.content.trim() !== "{}") {
+    const jsonMatch = message.content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error(`No JSON string found in message.content: ${message.content}`);
+    }
+    const result = JSON.parse(jsonMatch[0]);
+    if (jsonMatch[0].trim() !== "{}") {
       this.cache.writeCache(this.getCacheKey(predefinedTextList, text), result);
     }
     return result;
