@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "biome check",
-    "test": "vitest",
+    "test": "vitest run",
     "prepublishOnly": "pnpm build"
   },
   "bin": {

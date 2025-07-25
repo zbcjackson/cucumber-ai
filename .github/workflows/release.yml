@@ -1,4 +1,4 @@
-name: Create Release and Upload Tarball
+name: Create Release, Upload Tarball and Publish to npm
 
 on:
   push:
