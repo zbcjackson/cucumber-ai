@@ -1,7 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { parseConcept } from "../../src/step-loader/concept-parser";
 import { Hook, parseHook } from "../../src/step-loader/hook-parser";
-import { parseStepDefinitions } from "../../src/step-loader/step-parser";
 
 function testHookParser(hookDefinitions: string, expected: Hook[]) {
   return () => {
