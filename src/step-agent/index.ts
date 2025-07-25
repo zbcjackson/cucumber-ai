@@ -186,7 +186,7 @@ export class StepAgent {
       },
     ];
     const message = await this.llm.ask(messages);
-    const result = parseJson<MatchedText>(message.content);
+    const result: MatchedText = parseJson(message.content);
     if (Object.keys(result).length > 0) {
       this.cache.writeCache(this.getCacheKey(predefinedTextList, text), result);
     }

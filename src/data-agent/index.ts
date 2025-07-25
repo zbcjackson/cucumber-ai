@@ -13,6 +13,7 @@ import {
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
 import { Cache } from "../cache";
 import { LLM } from "../llm/openai";
+import { parseJson } from "../utils/json";
 
 interface Config {
   mcpServer: Record<
@@ -168,7 +169,7 @@ export class DataAgent {
         message = await this.llm.ask(messages, this.tools);
         messages.push(message);
       }
-      const result: Result = JSON.parse(message.content);
+      const result: Result = parseJson(message.content);
       if (!result.success) {
         throw new Error(`Data action failed: ${prompt}`);
       }
