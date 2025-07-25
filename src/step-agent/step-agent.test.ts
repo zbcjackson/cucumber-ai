@@ -5,6 +5,7 @@ import "dotenv/config";
 import * as ConceptLoader from "../step-loader/concept-loader";
 import * as StepLoader from "../step-loader/step-loader";
 import {DataAgent} from "../data-agent";
+import {Driver} from "../drivers/driver";
 
 vi.mock("../step-loader/step-loader");
 vi.mock("../step-loader/concept-loader");
@@ -12,9 +13,11 @@ describe("Step Agent", () => {
   let uiAgent: UIAgent;
   let dataAgent: DataAgent;
   let stepAgent: StepAgent;
+  let driver: Driver;
   beforeEach(() => {
     uiAgent = {
       start: vi.fn(),
+      setDriver: vi.fn(),
       ai: vi.fn(),
       aiTap: vi.fn(),
       aiInput: vi.fn(),
@@ -28,9 +31,13 @@ describe("Step Agent", () => {
       stop: vi.fn(),
       ask: vi.fn(),
     } as unknown as DataAgent;
+    driver = {
+      init: vi.fn()
+    } as unknown as Driver;
     stepAgent = new StepAgent();
     stepAgent.setUIAgent(uiAgent);
     stepAgent.setDataAgent(dataAgent);
+    stepAgent.setDriver(driver);
     vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([]);
   });
   afterEach(() => {

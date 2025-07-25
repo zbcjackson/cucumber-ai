@@ -3,11 +3,25 @@ import { Driver } from '../drivers/driver';
 
 export class UIAgent {
   private agent: PlaywrightAgent;
+  private started = false;
 
   constructor(private driver: Driver) {}
 
+  setDriver(driver: Driver) {
+    if (this.started) {
+      throw new Error("Cannot change driver after agent has started");
+    }
+    this.driver = driver;
+  }
+
   start() {
     this.agent = new PlaywrightAgent(this.driver.page);
+    this.started = true;
+  }
+
+  stop() {
+    this.agent = null;
+    this.started = false;
   }
 
   private async agentMethod(method: string, ...args) {

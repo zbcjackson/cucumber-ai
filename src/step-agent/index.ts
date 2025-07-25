@@ -27,7 +27,7 @@ export class StepAgent {
     private definedConcepts: Concept[];
     private readonly llm: LLM;
     private readonly cache: Cache;
-    private readonly driver: Driver;
+    private driver: Driver;
     private uiAgent: UIAgent;
     private dataAgent: DataAgent;
     private context: Record<string, string>;
@@ -45,6 +45,11 @@ export class StepAgent {
 
     getDriver(): Driver {
         return this.driver;
+    }
+
+    setDriver(driver: Driver) {
+        this.driver = driver;
+        this.uiAgent.setDriver(driver);
     }
 
     getUIAgent(): UIAgent {
