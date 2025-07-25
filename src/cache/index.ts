@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import crypto from 'node:crypto';
-import path from 'node:path';
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import { path as rootPath } from "app-root-path";
 
 export class Cache {
@@ -14,7 +14,7 @@ export class Cache {
     return null;
   }
 
-  public writeCache(text: string, object: any) {
+  public writeCache(text: string, object: unknown) {
     const cacheFilePath = this.getCacheFilePath(text);
     fs.mkdirSync(path.dirname(cacheFilePath), { recursive: true });
     fs.writeFileSync(cacheFilePath, JSON.stringify(object, null, 2), { encoding: "utf-8" });

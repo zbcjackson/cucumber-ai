@@ -1,18 +1,18 @@
+import fs from "node:fs";
+import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { CallToolResult, CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
+import { path as rootPath } from "app-root-path";
 import {
   ChatCompletionMessage,
   ChatCompletionMessageParam,
   ChatCompletionTool,
-} from 'openai/resources/chat/completions/completions';
+} from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
-import { LLM } from "../llm/openai";
 import { Cache } from "../cache";
-import {join} from "node:path";
-import { path as rootPath } from "app-root-path";
-import fs from "node:fs";
+import { LLM } from "../llm/openai";
 
 interface Config {
   mcpServer: Record<
@@ -63,7 +63,7 @@ export class DataAgent {
     if (fs.existsSync(configPath)) {
       this.config = require(configPath) as Config;
     } else {
-      this.config = {mcpServer: {}}
+      this.config = { mcpServer: {} };
     }
     this.llm = new LLM();
   }
@@ -170,7 +170,7 @@ export class DataAgent {
       }
       const result: Result = JSON.parse(message.content);
       if (!result.success) {
-        throw new Error(`Data action failed: ${prompt}`)
+        throw new Error(`Data action failed: ${prompt}`);
       }
       if (result.success && result.result === undefined) {
         const toolCalls = messages

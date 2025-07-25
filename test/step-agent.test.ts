@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { UIAgent } from "../src/ui-agent";
 import { StepAgent } from "../src";
+import { UIAgent } from "../src/ui-agent";
 import "dotenv/config";
+import { Driver } from "../src";
+import { DataAgent } from "../src/data-agent";
 import * as ConceptLoader from "../src/step-loader/concept-loader";
 import * as StepLoader from "../src/step-loader/step-loader";
-import {DataAgent} from "../src/data-agent";
-import {Driver} from "../src";
 
 vi.mock("../src/step-loader/step-loader");
 vi.mock("../src/step-loader/concept-loader");
@@ -32,7 +32,7 @@ describe("Step Agent", () => {
       ask: vi.fn(),
     } as unknown as DataAgent;
     driver = {
-      init: vi.fn()
+      init: vi.fn(),
     } as unknown as Driver;
     stepAgent = new StepAgent();
     stepAgent.setUIAgent(uiAgent);

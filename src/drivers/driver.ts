@@ -18,7 +18,8 @@ export class Driver {
       headless: options?.headless ?? false,
       timeout: this.timeout,
       logger: {
-        isEnabled: (name: string, severity: "verbose" | "info" | "warning" | "error"): boolean => options?.logging ?? false,
+        isEnabled: (name: string, severity: "verbose" | "info" | "warning" | "error"): boolean =>
+          options?.logging ?? false,
         log: (name: string, severity: "verbose" | "info" | "warning" | "error", message: string | Error): void => {
           console.log(`${name} ${message}`);
         },

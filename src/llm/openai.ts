@@ -28,7 +28,7 @@ export class LLM {
       model: "openai/gpt-4o",
       messages,
       tools,
-      temperature: 0
+      temperature: 0,
     });
     console.log(`Response(${(Date.now() - start) / 1000}s): `, response.choices[0].message);
 

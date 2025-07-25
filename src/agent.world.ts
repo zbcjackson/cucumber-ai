@@ -1,7 +1,7 @@
-import { StepAgent } from './step-agent';
-import { Driver } from './drivers/driver';
-import type { IWorldOptions } from '@cucumber/cucumber/lib/support_code_library_builder/world';
-import { World } from '@cucumber/cucumber';
+import { World } from "@cucumber/cucumber";
+import type { IWorldOptions } from "@cucumber/cucumber/lib/support_code_library_builder/world";
+import { Driver } from "./drivers/driver";
+import { StepAgent } from "./step-agent";
 
 export interface Options {
   headless?: boolean;
@@ -14,7 +14,11 @@ export class AgentWorld extends World<Options> {
 
   constructor(options: IWorldOptions<Options>) {
     super(options);
-    this.stepAgent = new StepAgent({headless: this.parameters.headless, logging: this.parameters.logging, useCache: !this.parameters.disableCache });
+    this.stepAgent = new StepAgent({
+      headless: this.parameters.headless,
+      logging: this.parameters.logging,
+      useCache: !this.parameters.disableCache,
+    });
   }
 
   get agent(): StepAgent {
