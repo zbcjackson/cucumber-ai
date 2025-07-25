@@ -148,7 +148,7 @@ export class StepAgent {
   }
 
   private replaceArgValue(text: string, args: Record<string, string> = {}): string {
-    return text.replace(/\[\[(.*?)\]\]/g, (_, key) => args[key.trim()] || this.context[key.trim()] || "");
+    return text.replace(/\[\[(.*?)]]/g, (_, key) => args[key.trim()] || this.context[key.trim()] || "");
   }
 
   private async findMatchedStep(stepText: string) {
