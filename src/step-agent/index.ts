@@ -10,6 +10,7 @@ import { loadSteps } from "../step-loader/step-loader";
 import { Step } from "../step-loader/step-parser";
 import { UIAgent } from "../ui-agent";
 import "dotenv/config";
+import { parseJson } from "../utils/json";
 
 interface MatchedText {
   text: string;
@@ -185,12 +186,8 @@ export class StepAgent {
       },
     ];
     const message = await this.llm.ask(messages);
-    const jsonMatch = message.content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error(`No JSON string found in message.content: ${message.content}`);
-    }
-    const result = JSON.parse(jsonMatch[0]);
-    if (jsonMatch[0].trim() !== "{}") {
+    const result = parseJson(message.content);
+    if (Object.keys(result).length > 0) {
       this.cache.writeCache(this.getCacheKey(predefinedTextList, text), result);
     }
     return result;
