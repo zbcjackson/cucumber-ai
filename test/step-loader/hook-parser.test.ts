@@ -25,6 +25,17 @@ describe("hook parser", () => {
     ]),
   );
   test(
+    "should parse hook definition start with 'After:'",
+    testHookParser("After:", [
+      {
+        hook: "after",
+        tags: "",
+        type: "hook",
+        actions: [],
+      },
+    ]),
+  );
+  test(
     "should ignore leading and tailing whitespaces in hook definition",
     testHookParser("   Before:  @admin   ", [
       {

@@ -16,12 +16,11 @@ export function parseHook(hookDefinitions: string): Hook[] {
     if (trimmed === "") {
       continue;
     }
-
-    if (trimmed.startsWith("Before:")) {
-      const tags = trimmed.slice(7).trim();
+    const [hookType, tags] = trimmed.split(/:(.*)/);
+    if (["Before", "After"].includes(hookType)) {
       hook = {
-        hook: "before",
-        tags: tags,
+        hook: hookType === "Before" ? "before" : "after",
+        tags: tags.trim(),
         type: "hook",
         actions: [],
       };
