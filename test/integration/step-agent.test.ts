@@ -9,6 +9,7 @@ import * as StepLoader from "../../src/loaders/step-loader";
 
 vi.mock("../../src/loaders/step-loader");
 vi.mock("../../src/loaders/concept-loader");
+
 describe("Step Agent", () => {
   let uiAgent: UIAgent;
   let dataAgent: DataAgent;
