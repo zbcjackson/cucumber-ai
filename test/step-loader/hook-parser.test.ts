@@ -14,8 +14,8 @@ function expectHookError(hookDefinition: string, expectedError: string) {
 }
 describe("hook parser", () => {
   test(
-    "should parse hook definition start with 'Hook:'",
-    testHookParser("Hook:", [
+    "should parse hook definition start with 'Before:'",
+    testHookParser("Before:", [
       {
         tags: "",
         type: "hook",
@@ -25,7 +25,7 @@ describe("hook parser", () => {
   );
   test(
     "should ignore leading and tailing whitespaces in hook definition",
-    testHookParser("   Hook:  @admin   ", [
+    testHookParser("   Before:  @admin   ", [
       {
         tags: "@admin",
         type: "hook",
@@ -34,8 +34,8 @@ describe("hook parser", () => {
     ]),
   );
   test(
-    "should ignore whitespaces between 'Hook:' and hook tags",
-    testHookParser("Hook:    @admin", [
+    "should ignore whitespaces between 'Before:' and hook tags",
+    testHookParser("Before:    @admin", [
       {
         tags: "@admin",
         type: "hook",
@@ -45,7 +45,7 @@ describe("hook parser", () => {
   );
   test(
     "should ignore empty lines in hook definitions",
-    testHookParser("\nHook: @admin\n", [
+    testHookParser("\nBefore: @admin\n", [
       {
         tags: "@admin",
         type: "hook",
@@ -55,7 +55,7 @@ describe("hook parser", () => {
   );
   test(
     "should parse multiple hook definitions",
-    testHookParser("Hook: @admin\nHook: @user", [
+    testHookParser("Before: @admin\nBefore: @user", [
       {
         tags: "@admin",
         type: "hook",
@@ -70,7 +70,7 @@ describe("hook parser", () => {
   );
   test(
     "should parse multiple actions under hook definition",
-    testHookParser("Hook: @admin\nai:click on the button\nai:fill the form", [
+    testHookParser("Before: @admin\nai:click on the button\nai:fill the form", [
       {
         tags: "@admin",
         type: "hook",
@@ -95,7 +95,7 @@ describe("hook parser", () => {
   );
   test(
     "should parse multiple step definitions with actions",
-    testHookParser("Hook: \nai:click on the button\nHook: @admin\nai:fill the form", [
+    testHookParser("Before: \nai:click on the button\nBefore: @admin\nai:fill the form", [
       {
         tags: "",
         type: "hook",
