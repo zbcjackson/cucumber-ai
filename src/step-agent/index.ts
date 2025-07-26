@@ -12,6 +12,7 @@ import { UIAgent } from "../ui-agent";
 import "dotenv/config";
 import fs from "node:fs";
 import path from "node:path";
+import { TextMatcher } from "../TextMatcher";
 import { parseJson } from "../utils/json";
 
 interface MatchedText {
@@ -28,21 +29,18 @@ interface StepAgentOptions {
 export class StepAgent {
   private definedSteps: Step[];
   private definedConcepts: Concept[];
-  private readonly llm: LLM;
-  private readonly cache: Cache;
   private driver: Driver;
   private uiAgent: UIAgent;
   private dataAgent: DataAgent;
   private context: Record<string, string>;
-  private systemPrompt: string;
+  private matcher: TextMatcher;
 
   constructor(private options: StepAgentOptions = {}) {
     this.driver = new Driver();
     this.uiAgent = new UIAgent(this.driver);
     this.dataAgent = new DataAgent({ useCache: options.useCache });
-    this.llm = new LLM();
+    this.matcher = new TextMatcher({ useCache: options.useCache });
     this.context = {};
-    this.cache = new Cache("step-agent");
   }
 
   getDriver(): Driver {
@@ -54,16 +52,8 @@ export class StepAgent {
     this.uiAgent.setDriver(driver);
   }
 
-  getUIAgent(): UIAgent {
-    return this.uiAgent;
-  }
-
   setUIAgent(uiAgent: UIAgent) {
     this.uiAgent = uiAgent;
-  }
-
-  getDataAgent(): DataAgent {
-    return this.dataAgent;
   }
 
   setDataAgent(dataAgent: DataAgent) {
@@ -71,7 +61,6 @@ export class StepAgent {
   }
 
   async start() {
-    this.systemPrompt = fs.readFileSync(path.join(__dirname, "system.prompt.md"), "utf-8");
     this.definedSteps = loadSteps();
     this.definedConcepts = loadConcepts();
     await this.dataAgent.start();
@@ -94,6 +83,12 @@ export class StepAgent {
     }
 
     await this.executeActions(match.step.actions, match.args);
+  }
+
+  private async findMatchedStep(stepText: string) {
+    const stepTextList = this.definedSteps.map((s) => s.text);
+    const matchedStep = await this.matcher.find(stepTextList, stepText);
+    return { step: this.definedSteps.find((s) => s.text === matchedStep.text), args: matchedStep.args };
   }
 
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
@@ -155,48 +150,13 @@ export class StepAgent {
     return text.replace(/\[\[(.*?)]]/g, (_, key) => args[key.trim()] || this.context[key.trim()] || "");
   }
 
-  private async findMatchedStep(stepText: string) {
-    const stepTextList = this.definedSteps.map((s) => s.text);
-    const matchedStep = await this.findMatchedText(stepTextList, stepText);
-    return { step: this.definedSteps.find((s) => s.text === matchedStep.text), args: matchedStep.args };
-  }
-
   private async findMatchedBehavior(action: Action) {
     const concept = this.definedConcepts.find((c) => c.name === action.name);
     if (!concept) {
       return null;
     }
     const behaviorTextList = concept.behaviors.map((b) => b.text);
-    const matchedBehavior = await this.findMatchedText(behaviorTextList, action.text);
+    const matchedBehavior = await this.matcher.find(behaviorTextList, action.text);
     return { behavior: concept.behaviors.find((b) => b.text === matchedBehavior.text), args: matchedBehavior.args };
-  }
-
-  private async findMatchedText(predefinedTextList: string[], text: string) {
-    if (this.options.useCache) {
-      const cachedResult = this.cache.readCache(this.getCacheKey(predefinedTextList, text));
-      if (cachedResult) {
-        return cachedResult;
-      }
-    }
-    const messages: Array<ChatCompletionMessageParam> = [
-      {
-        role: "system",
-        content: this.systemPrompt,
-      },
-      {
-        role: "user",
-        content: `Here is a list of defined text:\n${JSON.stringify(predefinedTextList)}\n\nFind the predefined text that matches the following text: ${text}`,
-      },
-    ];
-    const message = await this.llm.ask(messages);
-    const result: MatchedText = parseJson(message.content);
-    if (Object.keys(result).length > 0) {
-      this.cache.writeCache(this.getCacheKey(predefinedTextList, text), result);
-    }
-    return result;
-  }
-
-  private getCacheKey(predefinedTextList: string[], text: string) {
-    return `${predefinedTextList.join("\n")}\n${text}`;
   }
 }
