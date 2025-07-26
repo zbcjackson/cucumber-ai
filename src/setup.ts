@@ -1,11 +1,13 @@
 import { After, Before, ITestCaseHookParameter, setDefaultTimeout, setWorldConstructor } from "@cucumber/cucumber";
+import "dotenv/config";
 import { AgentWorld } from "./agent.world";
+import { setupHooks } from "./hooks";
 
 setWorldConstructor(AgentWorld);
 setDefaultTimeout(600 * 1000);
 
 Before(async function (this: AgentWorld) {
-  await this.agent.start();
+  await this.init();
 });
 
 After(async function (this: AgentWorld, scenario: ITestCaseHookParameter) {
@@ -17,3 +19,5 @@ After(async function (this: AgentWorld, scenario: ITestCaseHookParameter) {
   }
   await this.quit();
 });
+
+setupHooks();

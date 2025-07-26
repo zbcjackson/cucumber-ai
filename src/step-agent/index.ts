@@ -1,59 +1,28 @@
-import { DataAgent } from "../data-agent";
-import { Driver } from "../drivers/driver";
+import { TextMatcher } from "../TextMatcher";
 import { loadSteps } from "../loaders/step-loader";
 import { Step } from "../loaders/step-parser";
-import { UIAgent } from "../ui-agent";
-import "dotenv/config";
-import { TextMatcher } from "../TextMatcher";
 import { Runner } from "../runner";
 
 interface StepAgentOptions {
-  headless?: boolean;
-  logging?: boolean;
   useCache?: boolean;
 }
 
 export class StepAgent {
   private definedSteps: Step[];
-  private driver: Driver;
   private matcher: TextMatcher;
-  private runner: Runner;
 
-  constructor(private options: StepAgentOptions = {}) {
-    this.driver = new Driver();
+  constructor(
+    private runner: Runner,
+    options: StepAgentOptions = {},
+  ) {
     this.matcher = new TextMatcher({ useCache: options.useCache });
-    this.runner = new Runner(this.driver);
-  }
-
-  getDriver(): Driver {
-    return this.driver;
-  }
-
-  setDriver(driver: Driver) {
-    this.driver = driver;
-    this.runner.setDriver(driver);
-  }
-
-  setUIAgent(uiAgent: UIAgent) {
-    this.runner.setUIAgent(uiAgent);
-  }
-
-  setDataAgent(dataAgent: DataAgent) {
-    this.runner.setDataAgent(dataAgent);
   }
 
   async start() {
     this.definedSteps = loadSteps();
-    await this.driver.init({
-      headless: this.options.headless,
-      logging: this.options.logging,
-    });
-    await this.runner.start();
   }
 
-  async stop() {
-    await this.runner.stop();
-  }
+  async stop() {}
 
   async executeStep(stepText: string) {
     const match = await this.findMatchedStep(stepText);

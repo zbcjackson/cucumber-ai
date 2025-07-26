@@ -1,45 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StepAgent } from "../../src";
-import { UIAgent } from "../../src/ui-agent";
 import "dotenv/config";
-import { Driver } from "../../src";
-import { DataAgent } from "../../src/data-agent";
-import * as ConceptLoader from "../../src/loaders/concept-loader";
 import * as StepLoader from "../../src/loaders/step-loader";
+import { Runner } from "../../src/runner";
 
 vi.mock("../../src/loaders/step-loader");
-vi.mock("../../src/loaders/concept-loader");
 
 describe("Step Agent", () => {
-  let uiAgent: UIAgent;
-  let dataAgent: DataAgent;
   let stepAgent: StepAgent;
-  let driver: Driver;
+  let runner: Runner;
   beforeEach(() => {
-    uiAgent = {
+    runner = {
       start: vi.fn(),
-      setDriver: vi.fn(),
-      ai: vi.fn(),
-      aiTap: vi.fn(),
-      aiInput: vi.fn(),
-      aiHover: vi.fn(),
-      aiWaitFor: vi.fn(),
-      aiKeyboardPress: vi.fn(),
-      aiAssert: vi.fn(),
-    } as unknown as UIAgent;
-    dataAgent = {
-      start: vi.fn(),
-      stop: vi.fn(),
-      ask: vi.fn(),
-    } as unknown as DataAgent;
-    driver = {
-      init: vi.fn(),
-    } as unknown as Driver;
-    stepAgent = new StepAgent();
-    stepAgent.setUIAgent(uiAgent);
-    stepAgent.setDataAgent(dataAgent);
-    stepAgent.setDriver(driver);
-    vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([]);
+      executeActions: vi.fn(),
+    } as unknown as Runner;
+    stepAgent = new StepAgent(runner);
   });
   afterEach(() => {
     vi.clearAllMocks();
@@ -60,7 +35,16 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("add");
-    expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
+    expect(runner.executeActions).toHaveBeenCalledWith(
+      [
+        {
+          name: "ai",
+          type: "action",
+          text: "click add button",
+        },
+      ],
+      {},
+    );
   });
   it("should execute defined step with parameter", async () => {
     vi.mocked(StepLoader.loadSteps).mockReturnValue([
@@ -78,7 +62,16 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
-    expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
+    expect(runner.executeActions).toHaveBeenCalledWith(
+      [
+        {
+          name: "ai",
+          type: "action",
+          text: "click add button",
+        },
+      ],
+      { value: "name" },
+    );
   });
   it("should replace parameter in the action text", async () => {
     vi.mocked(StepLoader.loadSteps).mockReturnValue([
@@ -96,7 +89,16 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
-    expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
+    expect(runner.executeActions).toHaveBeenCalledWith(
+      [
+        {
+          name: "ai",
+          type: "action",
+          text: "input '[[value]]' in the input field",
+        },
+      ],
+      { value: "name" },
+    );
   });
   it("should match step with same intention", async () => {
     vi.mocked(StepLoader.loadSteps).mockReturnValue([
@@ -114,28 +116,18 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
-    expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
+    expect(runner.executeActions).toHaveBeenCalledWith(
+      [
+        {
+          name: "ai",
+          type: "action",
+          text: "input '[[value]]' in the input field",
+        },
+      ],
+      { value: "name" },
+    );
   });
   it("should support concept behaviors", async () => {
-    vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([
-      {
-        name: "MainPage",
-        type: "concept",
-        behaviors: [
-          {
-            type: "behavior",
-            text: "Check it shows '{{value}}' in the input field",
-            actions: [
-              {
-                type: "action",
-                name: "ai",
-                text: "input '[[value]]' in the input field",
-              },
-            ],
-          },
-        ],
-      },
-    ]);
     vi.mocked(StepLoader.loadSteps).mockReturnValue([
       {
         text: 'the thought "{{value}}" is shown',
@@ -151,6 +143,15 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
-    expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
+    expect(runner.executeActions).toHaveBeenCalledWith(
+      [
+        {
+          name: "MainPage",
+          type: "action",
+          text: "Check it shows '[[value]]' in the input field",
+        },
+      ],
+      { value: "name" },
+    );
   }, 300000);
 });
