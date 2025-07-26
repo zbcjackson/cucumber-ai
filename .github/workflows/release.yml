@@ -72,4 +72,4 @@ jobs:
           git add package.json
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           git commit -m ":bookmark: ${PACKAGE_VERSION} [skip ci]"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin master
