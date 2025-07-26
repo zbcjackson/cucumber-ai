@@ -1,0 +1,8 @@
+Step: I have opened the map application
+    open: https://ditu.baidu.com/
+
+Step: I search for "{{name}}"
+    MapPage: search for a location "[[name]]"
+
+Step: I should see the address "{{address}}"
+    MapPage: verify the address "[[address]]"

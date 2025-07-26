@@ -1,0 +1,14 @@
+default: &default
+  requireModule:
+    - 'ts-node/register'
+  require:
+    - 'src/ai.steps.ts'
+    - 'src/setup.ts'
+  forceExit: true
+  format:
+    - '@cucumber/pretty-formatter'
+  formatOptions:
+    colorsEnabled: true
+    theme:
+      "feature keyword": ["magenta", "bold"]
+      "scenario keyword": ["red"]

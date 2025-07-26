@@ -1,0 +1,8 @@
+Concept: MapPage
+    Behavior: search for a location "{{name}}"
+        aiInput([[name]]): the search box
+        aiTap: the search button
+        aiWaitFor: the search results populates
+
+    Behavior: verify the address "{{address}}"
+        aiAssert: the address shows "[[address]]"
