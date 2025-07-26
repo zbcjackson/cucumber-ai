@@ -1,6 +1,3 @@
-Step: I have opened the map application
-    open: https://ditu.baidu.com/
-
 Step: I search for "{{name}}"
     MapPage: search for a location "[[name]]"
 
