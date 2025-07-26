@@ -14,16 +14,21 @@ interface TextMatcherOptions {
   useCache?: boolean;
 }
 
-export class TextMatcher {
+export class TextAgent {
   private readonly llm: LLM;
   private readonly cache: Cache;
-  private readonly systemPrompt: string;
+  private systemPrompt: string;
 
   constructor(private options: TextMatcherOptions = {}) {
     this.llm = new LLM();
     this.cache = new Cache("step-agent");
+  }
+
+  async start() {
     this.systemPrompt = fs.readFileSync(path.join(__dirname, "system.prompt.md"), "utf-8");
   }
+
+  async stop() {}
 
   async find(predefinedTextList: string[], text: string) {
     if (this.options.useCache) {

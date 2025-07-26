@@ -1,9 +1,9 @@
-import { TextMatcher } from "../TextMatcher";
 import { DataAgent } from "../data-agent";
 import { Driver } from "../drivers/driver";
 import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
+import { TextAgent } from "../text-agent";
 import { UIAgent } from "../ui-agent";
 
 interface RunnerOptions {
@@ -15,7 +15,7 @@ export class Runner {
   private uiAgent: UIAgent;
   private dataAgent: DataAgent;
   private context: Record<string, string>;
-  private matcher: TextMatcher;
+  private textAgent: TextAgent;
 
   constructor(
     private driver: Driver,
@@ -23,19 +23,20 @@ export class Runner {
   ) {
     this.uiAgent = new UIAgent(this.driver);
     this.dataAgent = new DataAgent({ useCache: options.useCache });
-    this.matcher = new TextMatcher({ useCache: options.useCache });
+    this.textAgent = new TextAgent({ useCache: options.useCache });
     this.context = {};
   }
 
   async start() {
     this.definedConcepts = loadConcepts();
-    this.uiAgent.start();
+    await this.textAgent.start();
+    await this.uiAgent.start();
     await this.dataAgent.start();
   }
 
   async stop() {
     this.context = {};
-    this.uiAgent.stop();
+    await this.uiAgent.stop();
     await this.dataAgent.stop();
   }
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
@@ -103,7 +104,7 @@ export class Runner {
       return null;
     }
     const behaviorTextList = concept.behaviors.map((b) => b.text);
-    const matchedBehavior = await this.matcher.find(behaviorTextList, action.text);
+    const matchedBehavior = await this.textAgent.find(behaviorTextList, action.text);
     return { behavior: concept.behaviors.find((b) => b.text === matchedBehavior.text), args: matchedBehavior.args };
   }
 

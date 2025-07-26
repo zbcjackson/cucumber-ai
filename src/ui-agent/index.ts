@@ -14,12 +14,12 @@ export class UIAgent {
     this.driver = driver;
   }
 
-  start() {
+  async start() {
     this.agent = new PlaywrightAgent(this.driver.page);
     this.started = true;
   }
 
-  stop() {
+  async stop() {
     this.agent = null;
     this.started = false;
   }
