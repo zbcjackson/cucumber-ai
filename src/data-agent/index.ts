@@ -56,6 +56,7 @@ export class DataAgent {
   private llm: LLM;
   private started: boolean;
   private cache: Cache;
+  private systemPrompt: string;
 
   constructor(private options: DatabaseAgentOptions = {}) {
     this.started = false;
@@ -73,6 +74,7 @@ export class DataAgent {
     if (this.started) {
       await this.stop();
     }
+    this.systemPrompt = fs.readFileSync(join(__dirname, "system.prompt.md"), "utf-8");
     await this.startServers();
     await this.collectTools();
     this.started = true;
@@ -139,8 +141,7 @@ export class DataAgent {
       const messages: Array<ChatCompletionMessageParam> = [
         {
           role: "system",
-          content:
-            "You are a helpful assistant that can interact with a database using the Model Context Protocol. You can call tools to perform actions on the database. When calling tools, if the parameter or the field is not required and user does not specify it, do not set it. In the end, you should always respond a content which could be parsed as a json object. The key 'success' should be set to 'true' if all tasks are successful, or 'false' if there are any issues. If user query for something, the key 'result' should be set with a JSON object (the key is the name of the result using camel case, the value is the result), otherwise the key 'result' should not be set. If there is any issue, the key 'error' should be set with the error. For example, if you successfully executed a query, respond { 'success': true, 'result': {'count': 1} }. Do NOT add anything other than JSON object.",
+          content: this.systemPrompt,
         },
         {
           role: "user",
