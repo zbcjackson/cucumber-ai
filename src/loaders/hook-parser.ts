@@ -16,8 +16,8 @@ export function parseHook(hookDefinitions: string): Hook[] {
       continue;
     }
 
-    if (trimmed.startsWith("Hook:")) {
-      const tags = trimmed.slice(5).trim();
+    if (trimmed.startsWith("Before:")) {
+      const tags = trimmed.slice(7).trim();
       hook = {
         tags: tags,
         type: "hook",
