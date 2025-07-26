@@ -17,6 +17,7 @@ describe("hook parser", () => {
     "should parse hook definition start with 'Before:'",
     testHookParser("Before:", [
       {
+        hook: "before",
         tags: "",
         type: "hook",
         actions: [],
@@ -27,6 +28,7 @@ describe("hook parser", () => {
     "should ignore leading and tailing whitespaces in hook definition",
     testHookParser("   Before:  @admin   ", [
       {
+        hook: "before",
         tags: "@admin",
         type: "hook",
         actions: [],
@@ -37,6 +39,7 @@ describe("hook parser", () => {
     "should ignore whitespaces between 'Before:' and hook tags",
     testHookParser("Before:    @admin", [
       {
+        hook: "before",
         tags: "@admin",
         type: "hook",
         actions: [],
@@ -47,6 +50,7 @@ describe("hook parser", () => {
     "should ignore empty lines in hook definitions",
     testHookParser("\nBefore: @admin\n", [
       {
+        hook: "before",
         tags: "@admin",
         type: "hook",
         actions: [],
@@ -57,11 +61,13 @@ describe("hook parser", () => {
     "should parse multiple hook definitions",
     testHookParser("Before: @admin\nBefore: @user", [
       {
+        hook: "before",
         tags: "@admin",
         type: "hook",
         actions: [],
       },
       {
+        hook: "before",
         tags: "@user",
         type: "hook",
         actions: [],
@@ -72,6 +78,7 @@ describe("hook parser", () => {
     "should parse multiple actions under hook definition",
     testHookParser("Before: @admin\nai:click on the button\nai:fill the form", [
       {
+        hook: "before",
         tags: "@admin",
         type: "hook",
         actions: [
@@ -97,6 +104,7 @@ describe("hook parser", () => {
     "should parse multiple step definitions with actions",
     testHookParser("Before: \nai:click on the button\nBefore: @admin\nai:fill the form", [
       {
+        hook: "before",
         tags: "",
         type: "hook",
         actions: [
@@ -108,6 +116,7 @@ describe("hook parser", () => {
         ],
       },
       {
+        hook: "before",
         tags: "@admin",
         type: "hook",
         actions: [
