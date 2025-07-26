@@ -1,7 +1,7 @@
 import path from "node:path";
 import { vol } from "memfs";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { loadConcepts } from "../../src/step-loader/concept-loader";
+import { loadConcepts } from "../../src/loaders/concept-loader";
 
 vi.mock("node:fs");
 

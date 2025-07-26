@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Action, parseAction } from "../../src/step-loader/action-parser";
+import { Action, parseAction } from "../../src/loaders/action-parser";
 
 function testActionParser(actionDefinitions: string, expected: Action) {
   return () => {

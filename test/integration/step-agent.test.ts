@@ -4,11 +4,11 @@ import { UIAgent } from "../../src/ui-agent";
 import "dotenv/config";
 import { Driver } from "../../src";
 import { DataAgent } from "../../src/data-agent";
-import * as ConceptLoader from "../../src/step-loader/concept-loader";
-import * as StepLoader from "../../src/step-loader/step-loader";
+import * as ConceptLoader from "../../src/loaders/concept-loader";
+import * as StepLoader from "../../src/loaders/step-loader";
 
-vi.mock("../../src/step-loader/step-loader");
-vi.mock("../../src/step-loader/concept-loader");
+vi.mock("../../src/loaders/step-loader");
+vi.mock("../../src/loaders/concept-loader");
 describe("Step Agent", () => {
   let uiAgent: UIAgent;
   let dataAgent: DataAgent;
