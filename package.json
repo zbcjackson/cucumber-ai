@@ -22,7 +22,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "copy-md": "cpx \"src/**/*.md\" dist",
+    "build": "tsc && pnpm copy-md",
     "lint": "biome check",
     "test": "vitest run",
     "demo": "node bin/cucumber-js.js",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^16.18.126",
+    "cpx": "^1.5.0",
     "memfs": "^4.17.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
