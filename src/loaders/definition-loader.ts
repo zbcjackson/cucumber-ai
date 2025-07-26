@@ -17,7 +17,7 @@ export function loadDefinitions<T>(options: Options<T>): T[] {
   }
   let loadPath = options.path;
   if (!loadPath) {
-    loadPath = join(rootPath, options.directory);
+    loadPath = join(rootPath, "features", options.directory);
   }
   if (!fs.existsSync(loadPath)) {
     throw new Error(`${options.name} definition file or directory does not exist: ${loadPath}`);
