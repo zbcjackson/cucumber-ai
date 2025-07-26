@@ -10,6 +10,8 @@ import { loadSteps } from "../step-loader/step-loader";
 import { Step } from "../step-loader/step-parser";
 import { UIAgent } from "../ui-agent";
 import "dotenv/config";
+import fs from "node:fs";
+import path from "node:path";
 import { parseJson } from "../utils/json";
 
 interface MatchedText {
@@ -32,6 +34,7 @@ export class StepAgent {
   private uiAgent: UIAgent;
   private dataAgent: DataAgent;
   private context: Record<string, string>;
+  private systemPrompt: string;
 
   constructor(private options: StepAgentOptions = {}) {
     this.driver = new Driver();
@@ -68,6 +71,7 @@ export class StepAgent {
   }
 
   async start() {
+    this.systemPrompt = fs.readFileSync(path.join(__dirname, "system.prompt.md"), "utf-8");
     this.definedSteps = loadSteps();
     this.definedConcepts = loadConcepts();
     await this.dataAgent.start();
