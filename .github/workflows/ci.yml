@@ -8,6 +8,9 @@ on:
     branches:
       - "**"
   workflow_call:
+    secrets:
+      OPENAI_API_KEY:
+        required: true
 
 jobs:
   build:
