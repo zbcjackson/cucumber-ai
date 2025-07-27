@@ -1,7 +1,7 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
 import { BrowserAgent } from "../src/browser-agent";
-import { Driver } from "../src/drivers/driver";
+import { Driver } from "../src";
 
 describe("BrowserAgent", () => {
   let mockDriver: Driver;

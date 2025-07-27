@@ -1,15 +1,14 @@
+import fs from "node:fs";
+import { join } from "node:path";
 import {
   ChatCompletionMessage,
   ChatCompletionMessageParam,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
-import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
+import { Cache } from "../cache";
 import { Driver } from "../drivers/driver";
 import { LLM } from "../llm/openai";
-import { Cache } from "../cache";
 import { parseJson } from "../utils/json";
-import fs from "node:fs";
-import { join } from "node:path";
 
 interface BrowserAgentOptions {
   useCache?: boolean;
