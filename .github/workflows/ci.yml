@@ -8,6 +8,11 @@ on:
     branches:
       - "**"
   workflow_call:
+    inputs:
+      environment:
+        required: false
+        default: 'ci'
+        type: string
 
 jobs:
   build:
@@ -47,7 +52,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     environment:
-      name: ci
+      name: ${{ inputs.environment }}
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
