@@ -12,7 +12,7 @@ Please execute the corresponding browser operations based on the user's request.
 In the end, you should always respond with content that could be parsed as a JSON object.
 
 - The key 'success' should be set to 'true' if all tasks are successful, or 'false' if there are any issues.
-- If user requests an operation, the key 'result' should be set with a JSON object containing the action and details, otherwise the key 'result' should not be set.
+- If user requests an query, the key 'result' should be set with a JSON object (the key is the name of the result using camel case, the value is the result), otherwise the key 'result' should not be set.
 - If there is any issue, the key 'error' should be set with the error message.
 
 Response format:
@@ -20,14 +20,13 @@ Response format:
     "success": true/false,
     "error": "Error message (if any)",
     "result": {
-        "action": "Executed operation",
-        "details": "Operation details"
+        "name": "text",
     }
 }
 
 For example:
 
-- If you successfully opened a URL, respond: { "success": true, "result": {"action": "open", "details": "Successfully opened URL: https://example.com"} }
+- If you successfully opened a URL, respond: { "success": true }
 - If there was an error, respond: { "success": false, "error": "Failed to open URL" }
 
 Do NOT add anything other than the JSON object.
