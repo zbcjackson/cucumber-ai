@@ -1,3 +1,4 @@
+import { BrowserAgent } from "../browser-agent";
 import { DataAgent } from "../data-agent";
 import { Driver } from "../drivers/driver";
 import { Action } from "../loaders/action-parser";
@@ -16,6 +17,7 @@ export class Runner {
   private dataAgent: DataAgent;
   private context: Record<string, string>;
   private textAgent: TextAgent;
+  private browserAgent: BrowserAgent;
 
   constructor(
     private driver: Driver,
@@ -24,6 +26,7 @@ export class Runner {
     this.uiAgent = new UIAgent(this.driver);
     this.dataAgent = new DataAgent({ useCache: options.useCache });
     this.textAgent = new TextAgent({ useCache: options.useCache });
+    this.browserAgent = new BrowserAgent(this.driver, { useCache: options.useCache });
     this.context = {};
   }
 
@@ -32,13 +35,16 @@ export class Runner {
     await this.textAgent.start();
     await this.uiAgent.start();
     await this.dataAgent.start();
+    await this.browserAgent.start();
   }
 
   async stop() {
     this.context = {};
     await this.uiAgent.stop();
     await this.dataAgent.stop();
+    await this.browserAgent.stop();
   }
+
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
     for (const action of actions) {
       const text = this.replaceArgValue(action.text, args);
@@ -47,8 +53,8 @@ export class Runner {
         `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.context)}`,
       );
       switch (action.name) {
-        case "open":
-          await this.driver.open(text);
+        case "browser":
+          await this.browserAgent.ask(text);
           break;
         case "ai":
           await this.uiAgent.ai(text);
@@ -106,11 +112,6 @@ export class Runner {
     const behaviorTextList = concept.behaviors.map((b) => b.text);
     const matchedBehavior = await this.textAgent.find(behaviorTextList, action.text);
     return { behavior: concept.behaviors.find((b) => b.text === matchedBehavior.text), args: matchedBehavior.args };
-  }
-
-  setDriver(driver: Driver) {
-    this.driver = driver;
-    this.uiAgent.setDriver(driver);
   }
 
   setUIAgent(uiAgent: UIAgent) {
