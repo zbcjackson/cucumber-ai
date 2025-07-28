@@ -21,6 +21,8 @@ Cucumber-ai extends several core [Cucumber concepts](https://cucumber.io/docs/cu
 - **[Hooks](https://cucumber.io/docs/cucumber/api/#hooks)**: Set up and tear down test environments
 - **[Page Objects](https://cucumber.io/docs/guides/browser-automation/#page-objects)**: Create reusable page models for web applications
 
+Internally Cucumber-ai uses [Midscene](https://midscenejs.com/) to interact with web pages.
+
 ## Installation
 
 Install cucumber-ai as a development dependency:
@@ -71,6 +73,12 @@ features/
 │   └── *.hooks
 └── *.feature         # Test scenarios in Gherkin format
 ```
+
+### 3. Cucumber configuration
+Make sure in the cucumber configuration, two files are required:
+
+- './node_modules/cucumber-ai/dist/ai.steps.js'
+- './node_modules/cucumber-ai/dist/setup.js'
 
 ## Writing Tests
 
