@@ -221,12 +221,8 @@ Check out our [example project](https://github.com/zbcjackson/cucumber-ai-exampl
 
 - **Documentation**: [Cucumber.io Documentation](https://cucumber.io/docs/)
 - **Gherkin Syntax**: [Gherkin Reference](https://cucumber.io/docs/gherkin/)
-- **Step Definitions**: [Cucumber Step Definitions](https://cucumber.io/docs/cucumber/step-definitions/)
+- **Midscene**: [Midscene](https://midscenejs.com/)
 - **Examples**: [Cucumber-ai Example Project](https://github.com/zbcjackson/cucumber-ai-example)
-
-## Contributing
-
-We welcome contributions! Please see our [contributing guidelines](CONTRIBUTING.md) for details.
 
 ## License
 
