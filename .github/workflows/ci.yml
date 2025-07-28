@@ -11,6 +11,8 @@ on:
     secrets:
       OPENAI_API_KEY:
         required: true
+      LLM_API_KEY:
+        required: true
 
 jobs:
   build:
@@ -54,6 +56,9 @@ jobs:
       OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
       MIDSCENE_MODEL_NAME: ${{ vars.MIDSCENE_MODEL_NAME }}
       MIDSCENE_USE_QWEN_VL: ${{ vars.MIDSCENE_USE_QWEN_VL }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+      LLM_MODEL_NAME: ${{ vars.LLM_MODEL_NAME }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2

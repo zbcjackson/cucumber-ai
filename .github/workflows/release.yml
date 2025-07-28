@@ -10,6 +10,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     secrets:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
 
   build-and-release:
     runs-on: ubuntu-latest
