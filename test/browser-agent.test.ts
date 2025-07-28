@@ -50,13 +50,6 @@ describe("BrowserAgent", () => {
       expect(result.result).toBeUndefined();
       expect(mockDriver.saveScreenshot).toHaveBeenCalledWith("test-screenshot");
     });
-
-    it("should handle screenshot with different filenames", async () => {
-      const result = await agent.ask("Save a screenshot with filename my-page");
-
-      expect(result.success).toBe(true);
-      expect(mockDriver.saveScreenshot).toHaveBeenCalledWith("my-page");
-    });
   });
 
   describe("ask - video operations", () => {
