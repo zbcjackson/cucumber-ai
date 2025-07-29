@@ -53,6 +53,7 @@ export class DataAgent implements Agent, ActionProvider {
     this.systemPrompt = fs.readFileSync(join(__dirname, "system.prompt.md"), "utf-8");
     await this.startServers();
     await this.collectTools();
+    this.registerActions(this.context.getActions());
     this.started = true;
   }
 

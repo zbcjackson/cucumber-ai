@@ -13,6 +13,7 @@ export class UIAgent implements Agent, ActionProvider {
 
   async start() {
     this.agent = new PlaywrightAgent(this.context.getDriver().page);
+    this.registerActions(this.context.getActions());
     this.started = true;
   }
 

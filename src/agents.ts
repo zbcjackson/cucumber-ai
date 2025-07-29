@@ -1,5 +1,4 @@
 import { ActionAgent } from "./action-agent";
-import { Actions } from "./action-agent/actions";
 import { BrowserAgent } from "./browser-agent";
 import { Context } from "./context";
 import { DataAgent } from "./data-agent";
@@ -38,8 +37,6 @@ export class Agents {
     await this.browserAgent.start();
     await this.actionAgent.start();
     await this.stepAgent.start();
-
-    this.registerDefaultActions(this.context.getActions());
 
     this.started = true;
   }
@@ -81,11 +78,5 @@ export class Agents {
 
   getUIAgent(): UIAgent {
     return this.uiAgent;
-  }
-
-  private registerDefaultActions(actions: Actions): void {
-    this.browserAgent.registerActions(actions);
-    this.uiAgent.registerActions(actions);
-    this.dataAgent.registerActions(actions);
   }
 }
