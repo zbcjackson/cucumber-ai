@@ -127,9 +127,6 @@ export class DataAgent implements Agent, ActionProvider {
   }
 
   public registerActions(actions: Actions): void {
-    actions.register("data", async (text) => {
-      const result = await this.ask(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
+    actions.register("data", async (text) => await this.ask(text));
   }
 }

@@ -190,9 +190,6 @@ export class BrowserAgent implements Agent, ActionProvider {
   }
 
   public registerActions(actions: Actions): void {
-    actions.register("browser", async (text) => {
-      const result = await this.ask(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
+    actions.register("browser", async (text) => await this.ask(text));
   }
 }

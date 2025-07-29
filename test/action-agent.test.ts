@@ -4,6 +4,7 @@ import { ActionAgent } from "../src/action-agent";
 import * as ConceptLoader from "../src/loaders/concept-loader";
 import { mockContext } from "./utils";
 import { ActionHandler } from "../src/action-agent/actions";
+import { Result } from "../src/llm/openai";
 
 vi.mock("../src/loaders/concept-loader");
 
@@ -14,7 +15,7 @@ describe("ActionAgent", () => {
 
   beforeEach(() => {
     context = mockContext();
-    aiAction = vi.fn().mockResolvedValue({ success: true });
+    aiAction = vi.fn().mockResolvedValue({ success: true } as Result);
     context.getActions().register("ai", aiAction);
 
     vi.mocked(context.getTextAgent().find).mockResolvedValue({

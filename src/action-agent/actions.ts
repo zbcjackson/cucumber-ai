@@ -1,9 +1,7 @@
 import { Context } from "../context";
+import { Result } from "../llm/openai";
 
-export type ActionHandler = (
-  text: string,
-  arg: string | undefined,
-) => Promise<{ success: boolean; result?: Record<string, string>; error?: string }>;
+export type ActionHandler = (text: string, arg: string | undefined) => Promise<Result>;
 
 export class Actions {
   private handlers: Map<string, ActionHandler> = new Map();
@@ -12,11 +10,7 @@ export class Actions {
     this.handlers.set(name, handler);
   }
 
-  async execute(
-    name: string,
-    text: string,
-    arg: string | undefined,
-  ): Promise<{ success: boolean; result?: Record<string, string>; error?: string }> {
+  async execute(name: string, text: string, arg: string | undefined): Promise<Result> {
     const handler = this.handlers.get(name);
     if (!handler) {
       return {

@@ -56,40 +56,13 @@ export class UIAgent implements Agent, ActionProvider {
   }
 
   public registerActions(actions: Actions): void {
-    actions.register("ai", async (text) => {
-      const result = await this.ai(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
-
-    actions.register("aiTap", async (text) => {
-      const result = await this.aiTap(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
-
-    actions.register("aiInput", async (text, arg) => {
-      const result = await this.aiInput(arg || "", text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
-
-    actions.register("aiHover", async (text) => {
-      const result = await this.aiHover(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
-
-    actions.register("aiWaitFor", async (text) => {
-      const result = await this.aiWaitFor(text, { timeoutMs: 30000 });
-      return { success: result.success, result: result.result, error: result.error };
-    });
-
-    actions.register("aiKeyboardPress", async (text) => {
-      const result = await this.aiKeyboardPress(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
-
-    actions.register("aiAssert", async (text) => {
-      const result = await this.aiAssert(text);
-      return { success: result.success, result: result.result, error: result.error };
-    });
+    actions.register("ai", async (text) => await this.ai(text));
+    actions.register("aiTap", async (text) => await this.aiTap(text));
+    actions.register("aiInput", async (text, arg) => await this.aiInput(arg || "", text));
+    actions.register("aiHover", async (text) => await this.aiHover(text));
+    actions.register("aiWaitFor", async (text) => await this.aiWaitFor(text, { timeoutMs: 30000 }));
+    actions.register("aiKeyboardPress", async (text) => await this.aiKeyboardPress(text));
+    actions.register("aiAssert", async (text) => await this.aiAssert(text));
   }
 }
 
