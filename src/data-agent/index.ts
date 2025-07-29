@@ -104,6 +104,7 @@ export class DataAgent implements Agent, ActionProvider {
     this.clients = [];
     this.tools = [];
     this.toolMap = {};
+    this.unregisterActions(this.context.getActions());
     this.started = false;
   }
 
@@ -129,5 +130,9 @@ export class DataAgent implements Agent, ActionProvider {
 
   public registerActions(actions: Actions): void {
     actions.register("data", async (text) => await this.ask(text));
+  }
+
+  public unregisterActions(actions: Actions): void {
+    actions.unregister("data");
   }
 }

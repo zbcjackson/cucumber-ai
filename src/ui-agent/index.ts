@@ -18,6 +18,7 @@ export class UIAgent implements Agent, ActionProvider {
   }
 
   async stop() {
+    this.unregisterActions(this.context.getActions());
     this.agent = null;
     this.started = false;
   }
@@ -64,6 +65,16 @@ export class UIAgent implements Agent, ActionProvider {
     actions.register("aiWaitFor", async (text) => await this.aiWaitFor(text, { timeoutMs: 30000 }));
     actions.register("aiKeyboardPress", async (text) => await this.aiKeyboardPress(text));
     actions.register("aiAssert", async (text) => await this.aiAssert(text));
+  }
+
+  public unregisterActions(actions: Actions): void {
+    actions.unregister("ai");
+    actions.unregister("aiTap");
+    actions.unregister("aiInput");
+    actions.unregister("aiHover");
+    actions.unregister("aiWaitFor");
+    actions.unregister("aiKeyboardPress");
+    actions.unregister("aiAssert");
   }
 }
 

@@ -169,6 +169,7 @@ export class BrowserAgent implements Agent, ActionProvider {
       } catch (error) {
         console.warn("Error closing browser:", error);
       }
+      this.unregisterActions(this.context.getActions());
       this.started = false;
     }
   }
@@ -192,5 +193,9 @@ export class BrowserAgent implements Agent, ActionProvider {
 
   public registerActions(actions: Actions): void {
     actions.register("browser", async (text) => await this.ask(text));
+  }
+
+  public unregisterActions(actions: Actions): void {
+    actions.unregister("browser");
   }
 }

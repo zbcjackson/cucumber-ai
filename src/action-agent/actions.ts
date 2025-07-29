@@ -10,6 +10,10 @@ export class Actions {
     this.handlers.set(name, handler);
   }
 
+  unregister(name: string): void {
+    this.handlers.delete(name);
+  }
+
   async execute(name: string, text: string, arg: string | undefined): Promise<Result> {
     const handler = this.handlers.get(name);
     if (!handler) {
