@@ -19,7 +19,7 @@ export class TextAgent implements Agent {
 
   constructor(private context: Context) {
     this.llm = new LLM();
-    this.cache = new Cache("step-agent");
+    this.cache = new Cache();
   }
 
   async start() {
@@ -30,7 +30,7 @@ export class TextAgent implements Agent {
 
   async find(predefinedTextList: string[], text: string) {
     if (this.context.isCacheEnabled()) {
-      const cachedResult = this.cache.readCache(this.getCacheKey(predefinedTextList, text));
+      const cachedResult = this.cache.readCache("step-agent", this.getCacheKey(predefinedTextList, text));
       if (cachedResult) {
         return cachedResult;
       }
@@ -48,7 +48,7 @@ export class TextAgent implements Agent {
     const message = await this.llm.ask(messages);
     const result: MatchedText = parseJson(message.content);
     if (Object.keys(result).length > 0) {
-      this.cache.writeCache(this.getCacheKey(predefinedTextList, text), result);
+      this.cache.writeCache("step-agent", this.getCacheKey(predefinedTextList, text), result);
     }
     return result;
   }

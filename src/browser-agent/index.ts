@@ -44,7 +44,7 @@ export class BrowserAgent implements Agent {
   constructor(context: Context) {
     this.context = context;
     this.started = false;
-    this.cache = new Cache("browser-agent");
+    this.cache = new Cache();
     this.llm = new LLM();
   }
 
@@ -240,7 +240,7 @@ export class BrowserAgent implements Agent {
         const toolCalls = messages
           .filter((m) => m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0)
           .flatMap((m: ChatCompletionMessage) => m.tool_calls);
-        this.cache.writeCache(prompt, toolCalls);
+        this.cache.writeCache("browser-agent", prompt, toolCalls);
       }
 
       return result;
@@ -263,7 +263,7 @@ export class BrowserAgent implements Agent {
   }
 
   private async executeCachedToolCalls(prompt: string) {
-    const cachedToolCalls = this.cache.readCache(prompt) || [];
+    const cachedToolCalls = this.cache.readCache("browser-agent", prompt) || [];
     if (cachedToolCalls.length > 0) {
       for (const toolCall of cachedToolCalls) {
         await this.callTool(toolCall);

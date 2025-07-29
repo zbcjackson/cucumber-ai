@@ -49,7 +49,7 @@ export class DataAgent implements Agent {
 
   constructor(private context: Context) {
     this.started = false;
-    this.cache = new Cache("data-agent");
+    this.cache = new Cache();
     const configPath = join(rootPath, "config.json");
     if (fs.existsSync(configPath)) {
       this.config = require(configPath) as Config;
@@ -162,7 +162,7 @@ export class DataAgent implements Agent {
         const toolCalls = messages
           .filter((m) => m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0)
           .flatMap((m: ChatCompletionMessage) => m.tool_calls);
-        this.cache.writeCache(prompt, toolCalls);
+        this.cache.writeCache("data-agent", prompt, toolCalls);
       }
       return result;
     });
@@ -187,7 +187,7 @@ export class DataAgent implements Agent {
   }
 
   private async executeCachedToolCalls(prompt: string) {
-    const cachedToolCalls = this.cache.readCache(prompt) || [];
+    const cachedToolCalls = this.cache.readCache("data-agent", prompt) || [];
     if (cachedToolCalls.length > 0) {
       for (const toolCall of cachedToolCalls) {
         await this.callTool(toolCall);
