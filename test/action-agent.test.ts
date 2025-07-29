@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, MockedFunction, vi } from "vitest";
+import { MockedFunction, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
 import { ActionAgent } from "../src/action-agent";
-import * as ConceptLoader from "../src/loaders/concept-loader";
-import { mockContext } from "./utils";
 import { ActionHandler } from "../src/action-agent/actions";
 import { Result } from "../src/llm/openai";
+import * as ConceptLoader from "../src/loaders/concept-loader";
+import { mockContext } from "./utils";
 
 vi.mock("../src/loaders/concept-loader");
 

@@ -1,6 +1,7 @@
 import type { Page } from "playwright";
 import { vi } from "vitest";
 import { ActionAgent, ConceptAgent } from "../src/action-agent";
+import { Actions } from "../src/action-agent/actions";
 import { BrowserAgent } from "../src/browser-agent";
 import { Context } from "../src/context";
 import { DataAgent } from "../src/data-agent";
@@ -8,7 +9,6 @@ import { Driver } from "../src/drivers/driver";
 import { StepAgent } from "../src/step-agent";
 import { TextAgent } from "../src/text-agent";
 import { UIAgent } from "../src/ui-agent";
-import { Actions } from "../src/action-agent/actions";
 
 /**
  * Creates a mock Context with all public methods mocked

@@ -1,10 +1,10 @@
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { ActionProvider } from "./action-provider";
-import { Actions } from "./actions";
 import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
+import { ActionProvider } from "./action-provider";
+import { Actions } from "./actions";
 
 export class ConceptAgent implements Agent, ActionProvider {
   private definedConcepts: Concept[] = [];

@@ -2,8 +2,8 @@ import OpenAI from "openai";
 import {
   ChatCompletionMessage,
   ChatCompletionMessageParam,
-  ChatCompletionTool,
   ChatCompletionMessageToolCall,
+  ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
 import { Cache } from "../cache";

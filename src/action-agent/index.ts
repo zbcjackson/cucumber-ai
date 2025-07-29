@@ -11,9 +11,7 @@ export class ActionAgent implements Agent {
     this.actionContext = {};
   }
 
-  async start() {
-    // No longer need to load concepts here
-  }
+  async start() {}
 
   async stop() {
     this.actionContext = {};
