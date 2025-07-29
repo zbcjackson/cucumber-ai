@@ -10,10 +10,10 @@ interface ActionAgentOptions {
 
 export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
-  private context: Record<string, string>;
+  private actionContext: Record<string, string>;
 
-  constructor(private contextInstance: Context) {
-    this.context = {};
+  constructor(private context: Context) {
+    this.actionContext = {};
   }
 
   async start() {
@@ -21,7 +21,7 @@ export class ActionAgent implements Agent {
   }
 
   async stop() {
-    this.context = {};
+    this.actionContext = {};
   }
 
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
@@ -29,39 +29,39 @@ export class ActionAgent implements Agent {
       const text = this.replaceArgValue(action.text, args);
       const arg = action.arg && this.replaceArgValue(action.arg, args);
       console.log(
-        `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.context)}`,
+        `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.actionContext)}`,
       );
       switch (action.name) {
         case "browser":
-          await this.contextInstance.getAgents().getBrowserAgent().ask(text);
+          await this.context.getBrowserAgent().ask(text);
           break;
         case "ai":
-          await this.contextInstance.getAgents().getUIAgent().ai(text);
+          await this.context.getUIAgent().ai(text);
           break;
         case "aiTap":
-          await this.contextInstance.getAgents().getUIAgent().aiTap(text);
+          await this.context.getUIAgent().aiTap(text);
           break;
         case "aiInput":
-          await this.contextInstance.getAgents().getUIAgent().aiInput(arg, text);
+          await this.context.getUIAgent().aiInput(arg, text);
           break;
         case "aiHover":
-          await this.contextInstance.getAgents().getUIAgent().aiHover(text);
+          await this.context.getUIAgent().aiHover(text);
           break;
         case "aiWaitFor":
-          await this.contextInstance.getAgents().getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
+          await this.context.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
           break;
         case "aiKeyboardPress":
-          await this.contextInstance.getAgents().getUIAgent().aiKeyboardPress(text);
+          await this.context.getUIAgent().aiKeyboardPress(text);
           break;
         case "aiAssert":
-          await this.contextInstance.getAgents().getUIAgent().aiAssert(text);
+          await this.context.getUIAgent().aiAssert(text);
           break;
         case "data": {
-          const { success, result, error } = await this.contextInstance.getAgents().getDataAgent().ask(text);
+          const { success, result, error } = await this.context.getDataAgent().ask(text);
           if (success) {
             if (result) {
-              this.context = { ...this.context, ...result };
-              console.log(`Update context: ${JSON.stringify(this.context)}`);
+              this.actionContext = { ...this.actionContext, ...result };
+              console.log(`Update context: ${JSON.stringify(this.actionContext)}`);
             }
           } else {
             throw new Error(`Data action failed: ${error}`);
@@ -80,7 +80,7 @@ export class ActionAgent implements Agent {
   }
 
   private replaceArgValue(text: string, args: Record<string, string> = {}): string {
-    return text.replace(/\[\[(.*?)]]/g, (_, key) => args[key.trim()] || this.context[key.trim()] || "");
+    return text.replace(/\[\[(.*?)]]/g, (_, key) => args[key.trim()] || this.actionContext[key.trim()] || "");
   }
 
   private async findMatchedBehavior(action: Action) {
@@ -89,7 +89,7 @@ export class ActionAgent implements Agent {
       return null;
     }
     const behaviorTextList = concept.behaviors.map((b) => b.text);
-    const matchedBehavior = await this.contextInstance.getAgents().getTextAgent().find(behaviorTextList, action.text);
+    const matchedBehavior = await this.context.getTextAgent().find(behaviorTextList, action.text);
     return { behavior: concept.behaviors.find((b) => b.text === matchedBehavior.text), args: matchedBehavior.args };
   }
 }
