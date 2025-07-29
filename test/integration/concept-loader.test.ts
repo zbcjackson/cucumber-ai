@@ -4,7 +4,7 @@ import { loadConcepts } from "../../src/loaders/concept-loader";
 
 describe("Concept Loader", () => {
   test("should load concept definitions from a specified file", () => {
-    const steps = loadConcepts(path.join(__dirname, "../fixtures/test.concept"));
+    const steps = loadConcepts(path.join(__dirname, "fixtures/test.concept"));
     expect(steps).toEqual([
       {
         name: "LoginPage",
@@ -47,7 +47,7 @@ describe("Concept Loader", () => {
     ]);
   });
   test("should load concept definitions from a specified directory", () => {
-    const steps = loadConcepts(path.join(__dirname, "../fixtures/concepts"));
+    const steps = loadConcepts(path.join(__dirname, "fixtures/concepts"));
     expect(steps).toEqual([
       {
         name: "One",

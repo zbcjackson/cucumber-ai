@@ -4,7 +4,7 @@ import { loadSteps } from "../../src/loaders/step-loader";
 
 describe("StepLoader", () => {
   test("should load step definitions from a specified file", () => {
-    const steps = loadSteps(path.join(__dirname, "../fixtures/test.steps"));
+    const steps = loadSteps(path.join(__dirname, "fixtures/test.steps"));
     expect(steps).toEqual([
       {
         text: "login via password",
@@ -41,7 +41,7 @@ describe("StepLoader", () => {
     ]);
   });
   test("should load step definitions from a specified directory", () => {
-    const steps = loadSteps(path.join(__dirname, "../fixtures/steps"));
+    const steps = loadSteps(path.join(__dirname, "fixtures/steps"));
     expect(steps).toEqual([
       {
         text: "one",

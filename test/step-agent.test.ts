@@ -1,15 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { StepAgent } from "../../src";
+import { StepAgent } from "../src";
 import "dotenv/config";
-import * as StepLoader from "../../src/loaders/step-loader";
-import { ActionAgent } from "../../src/action-agent";
-import { Context } from "../../src/context";
+import { ActionAgent } from "../src/action-agent";
+import { Context } from "../src/context";
+import * as StepLoader from "../src/loaders/step-loader";
 
-vi.mock("../../src/loaders/step-loader");
+vi.mock("../src/loaders/step-loader");
 
 describe("Step Agent", () => {
   let stepAgent: StepAgent;
   let actionAgent: ActionAgent;
+  let mockContext: Context;
 
   beforeEach(() => {
     actionAgent = {
@@ -17,13 +18,11 @@ describe("Step Agent", () => {
       executeActions: vi.fn(),
     } as unknown as ActionAgent;
 
-    // Create a mock TextAgent
     const textAgent = {
       find: vi.fn(),
     };
 
-    // Create a mock Context class
-    const mockContext = {
+    mockContext = {
       getAgents: vi.fn().mockReturnValue({
         getActionAgent: vi.fn().mockReturnValue(actionAgent),
         getTextAgent: vi.fn().mockReturnValue(textAgent),
@@ -50,8 +49,6 @@ describe("Step Agent", () => {
       },
     ]);
 
-    // Mock TextAgent find method
-    const mockContext = stepAgent["context"] as any;
     const textAgent = mockContext.getAgents().getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: "add", args: {} });
 
@@ -83,8 +80,6 @@ describe("Step Agent", () => {
       },
     ]);
 
-    // Mock TextAgent find method
-    const mockContext = stepAgent["context"] as any;
     const textAgent = mockContext.getAgents().getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: "add '{{value}}'", args: { value: "name" } });
 
@@ -116,8 +111,6 @@ describe("Step Agent", () => {
       },
     ]);
 
-    // Mock TextAgent find method
-    const mockContext = stepAgent["context"] as any;
     const textAgent = mockContext.getAgents().getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: "add '{{value}}'", args: { value: "name" } });
 
@@ -149,8 +142,6 @@ describe("Step Agent", () => {
       },
     ]);
 
-    // Mock TextAgent find method
-    const mockContext = stepAgent["context"] as any;
     const textAgent = mockContext.getAgents().getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: 'the thought "{{value}}" is shown', args: { value: "name" } });
 
@@ -182,8 +173,6 @@ describe("Step Agent", () => {
       },
     ]);
 
-    // Mock TextAgent find method
-    const mockContext = stepAgent["context"] as any;
     const textAgent = mockContext.getAgents().getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: 'the thought "{{value}}" is shown', args: { value: "name" } });
 

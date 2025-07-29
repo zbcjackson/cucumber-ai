@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { UIAgent } from "../../src/ui-agent";
+import { UIAgent } from "../src/ui-agent";
 import "dotenv/config";
-import { Driver } from "../../src";
-import { DataAgent } from "../../src/data-agent";
-import * as ConceptLoader from "../../src/loaders/concept-loader";
-import { ActionAgent } from "../../src/action-agent";
-import { Context } from "../../src/context";
+import { Driver } from "../src";
+import { ActionAgent } from "../src/action-agent";
+import { Context } from "../src/context";
+import { DataAgent } from "../src/data-agent";
+import * as ConceptLoader from "../src/loaders/concept-loader";
 
-vi.mock("../../src/loaders/concept-loader");
+vi.mock("../src/loaders/concept-loader");
 
 describe("ActionAgent", () => {
   let uiAgent: UIAgent;
