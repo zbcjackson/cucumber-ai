@@ -9,6 +9,7 @@ import {
   ChatCompletionMessage,
   ChatCompletionMessageParam,
   ChatCompletionTool,
+  ChatCompletionMessageToolCall,
 } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
 import { Agent } from "../agent";
@@ -141,17 +142,12 @@ export class DataAgent implements Agent {
 
       while (message.tool_calls && message.tool_calls.length > 0) {
         for (const toolCall of message.tool_calls) {
-          const result: CallToolResult = CallToolResultSchema.parse(
-            await this.toolMap[toolCall.function.name].callTool({
-              name: toolCall.function.name,
-              arguments: JSON.parse(toolCall.function.arguments),
-            }),
-          );
+          const result = await this.callTool(toolCall);
 
           messages.push({
             role: "tool",
             tool_call_id: toolCall.id,
-            content: result.content as ChatCompletionContentPartText[],
+            content: result as ChatCompletionContentPartText[],
           });
         }
 
@@ -172,6 +168,16 @@ export class DataAgent implements Agent {
     });
   }
 
+  private async callTool(toolCall: ChatCompletionMessageToolCall): Promise<ChatCompletionContentPartText[]> {
+    const result = CallToolResultSchema.parse(
+      await this.toolMap[toolCall.function.name].callTool({
+        name: toolCall.function.name,
+        arguments: JSON.parse(toolCall.function.arguments),
+      }),
+    );
+    return result.content as ChatCompletionContentPartText[];
+  }
+
   private async printElapsedTime<T>(func: () => Promise<T>) {
     const start = Date.now();
     const result = await func();
@@ -184,10 +190,7 @@ export class DataAgent implements Agent {
     const cachedToolCalls = this.cache.readCache(prompt) || [];
     if (cachedToolCalls.length > 0) {
       for (const toolCall of cachedToolCalls) {
-        await this.toolMap[toolCall.function.name].callTool({
-          name: toolCall.function.name,
-          arguments: JSON.parse(toolCall.function.arguments),
-        });
+        await this.callTool(toolCall);
       }
       return true;
     }
