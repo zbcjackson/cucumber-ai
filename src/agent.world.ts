@@ -3,6 +3,7 @@ import type { IWorldOptions } from "@cucumber/cucumber/lib/support_code_library_
 import { Driver } from "./drivers/driver";
 import { Action } from "./loaders/action-parser";
 import { Agents } from "./agents";
+import { Context } from "./context";
 
 export interface Options {
   headless?: boolean;
@@ -11,43 +12,47 @@ export interface Options {
 }
 
 export class AgentWorld<T = unknown> extends World<T & Options> {
-  private readonly _agents: Agents;
-  private readonly _driver: Driver;
+  private readonly _context: Context;
 
   constructor(options: IWorldOptions<T & Options>) {
     super(options);
-    this._driver = new Driver();
-    this._agents = new Agents(this.driver, {
+    const driver = new Driver();
+    const agents = new Agents(driver, {
+      useCache: !this.parameters.disableCache,
+    });
+    this._context = new Context(driver, agents, {
+      headless: this.parameters.headless,
+      logging: this.parameters.logging,
+      disableCache: this.parameters.disableCache,
       useCache: !this.parameters.disableCache,
     });
   }
 
   get driver(): Driver {
-    return this._driver;
+    return this._context.getDriver();
   }
 
   get agents(): Agents {
-    return this._agents;
+    return this._context.getAgents();
+  }
+
+  get context(): Context {
+    return this._context;
   }
 
   async init() {
-    await this.driver.init({
-      headless: this.parameters.headless,
-      logging: this.parameters.logging,
-    });
-    await this.agents.start();
+    await this.context.init();
   }
 
   async executeStep(stepText: string) {
-    await this.agents.getStepAgent().executeStep(stepText);
+    await this.context.getAgents().getStepAgent().executeStep(stepText);
   }
 
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
-    await this.agents.getActionAgent().executeActions(actions, args);
+    await this.context.getAgents().getActionAgent().executeActions(actions, args);
   }
 
   async quit() {
-    await this.agents.stop();
-    await this.driver.quit();
+    await this.context.quit();
   }
 }

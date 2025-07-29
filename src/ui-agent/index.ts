@@ -1,22 +1,29 @@
 import { PlaywrightAgent } from "@midscene/web";
 import { Agent } from "../agent";
+import { Context } from "../context";
 import { Driver } from "../drivers/driver";
+import { Agents } from "../agents";
+import { DataAgent } from "../data-agent";
+import { TextAgent } from "../text-agent";
+import { BrowserAgent } from "../browser-agent";
+import { ActionAgent } from "../action-agent";
+import { StepAgent } from "../step-agent";
 
 export class UIAgent implements Agent {
   private agent: PlaywrightAgent;
   private started = false;
 
-  constructor(private driver: Driver) {}
+  constructor(private context: Context) {}
 
   setDriver(driver: Driver) {
     if (this.started) {
       throw new Error("UI Agent has already started, cannot set driver.");
     }
-    this.driver = driver;
+    // This method is kept for backward compatibility but driver is now accessed through context
   }
 
   async start() {
-    this.agent = new PlaywrightAgent(this.driver.page);
+    this.agent = new PlaywrightAgent(this.context.getDriver().page);
     this.started = true;
   }
 

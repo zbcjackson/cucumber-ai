@@ -5,10 +5,17 @@ import {
   ChatCompletionMessageParam,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
+import { ActionAgent } from "../action-agent";
 import { Agent } from "../agent";
+import { Agents } from "../agents";
 import { Cache } from "../cache";
+import { Context } from "../context";
+import { DataAgent } from "../data-agent";
 import { Driver } from "../drivers/driver";
 import { LLM } from "../llm/openai";
+import { StepAgent } from "../step-agent";
+import { TextAgent } from "../text-agent";
+import { UIAgent } from "../ui-agent";
 import { parseJson } from "../utils/json";
 
 interface BrowserAgentOptions {
@@ -29,21 +36,18 @@ interface ToolResult {
 type ToolFunction = (args: Record<string, unknown>) => Promise<ToolResult>;
 
 export class BrowserAgent implements Agent {
-  private driver: Driver;
   private llm: LLM;
   private started: boolean;
   private cache: Cache;
   private systemPrompt: string;
   private tools: ChatCompletionTool[] = [];
   private toolMap: Record<string, ToolFunction> = {};
+  private context: Context;
 
-  constructor(
-    driver: Driver,
-    private options: BrowserAgentOptions = {},
-  ) {
+  constructor(context: Context) {
+    this.context = context;
     this.started = false;
     this.cache = new Cache("browser-agent");
-    this.driver = driver;
     this.llm = new LLM();
   }
 
@@ -141,31 +145,31 @@ export class BrowserAgent implements Agent {
     this.toolMap = {
       open: async (args: Record<string, unknown>) => {
         const url = args.url as string;
-        await this.driver.open(url);
+        await this.context.getDriver().open(url);
         return { action: "open", details: `Successfully opened URL: ${url}` };
       },
       saveScreenshot: async (args: Record<string, unknown>) => {
         const name = args.name as string;
-        await this.driver.saveScreenshot(name);
+        await this.context.getDriver().saveScreenshot(name);
         return { action: "saveScreenshot", details: `Screenshot saved as: ${name}.png` };
       },
       saveVideo: async (args: Record<string, unknown>) => {
         const name = args.name as string;
-        await this.driver.saveVideo(name);
+        await this.context.getDriver().saveVideo(name);
         return { action: "saveVideo", details: `Video saved as: ${name}.webm` };
       },
       deleteVideo: async () => {
-        await this.driver.deleteVideo();
+        await this.context.getDriver().deleteVideo();
         return { action: "deleteVideo", details: "Video deleted" };
       },
       addItemInLocalStorage: async (args: Record<string, unknown>) => {
         const key = args.key as string;
         const value = args.value as string;
-        await this.driver.addItemInLocalStorage(key, value);
+        await this.context.getDriver().addItemInLocalStorage(key, value);
         return { action: "addItemInLocalStorage", details: `Added local storage item: ${key} = ${value}` };
       },
       quit: async () => {
-        await this.driver.quit();
+        await this.context.getDriver().quit();
         return { action: "quit", details: "Browser closed" };
       },
     };
@@ -183,7 +187,7 @@ export class BrowserAgent implements Agent {
   public async stop() {
     if (this.started) {
       try {
-        await this.driver.quit();
+        await this.context.getDriver().quit();
       } catch (error) {
         console.warn("Error closing browser:", error);
       }
@@ -194,7 +198,7 @@ export class BrowserAgent implements Agent {
   public async ask(prompt: string, opts: { useCache?: boolean } = {}): Promise<Result> {
     return await this.printElapsedTime(async () => {
       if (opts.useCache === undefined) {
-        opts.useCache = this.options.useCache;
+        opts.useCache = this.context.isCacheEnabled();
       }
 
       if (opts.useCache && (await this.executeCachedToolCalls(prompt))) {

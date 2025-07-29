@@ -1,5 +1,5 @@
 import { Agent } from "../agent";
-import { Agents } from "../agents";
+import { Context } from "../context";
 import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
@@ -12,10 +12,7 @@ export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
   private context: Record<string, string>;
 
-  constructor(
-    private agents: Agents,
-    options: ActionAgentOptions = {},
-  ) {
+  constructor(private contextInstance: Context) {
     this.context = {};
   }
 
@@ -36,31 +33,31 @@ export class ActionAgent implements Agent {
       );
       switch (action.name) {
         case "browser":
-          await this.agents.getBrowserAgent().ask(text);
+          await this.contextInstance.getAgents().getBrowserAgent().ask(text);
           break;
         case "ai":
-          await this.agents.getUIAgent().ai(text);
+          await this.contextInstance.getAgents().getUIAgent().ai(text);
           break;
         case "aiTap":
-          await this.agents.getUIAgent().aiTap(text);
+          await this.contextInstance.getAgents().getUIAgent().aiTap(text);
           break;
         case "aiInput":
-          await this.agents.getUIAgent().aiInput(arg, text);
+          await this.contextInstance.getAgents().getUIAgent().aiInput(arg, text);
           break;
         case "aiHover":
-          await this.agents.getUIAgent().aiHover(text);
+          await this.contextInstance.getAgents().getUIAgent().aiHover(text);
           break;
         case "aiWaitFor":
-          await this.agents.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
+          await this.contextInstance.getAgents().getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
           break;
         case "aiKeyboardPress":
-          await this.agents.getUIAgent().aiKeyboardPress(text);
+          await this.contextInstance.getAgents().getUIAgent().aiKeyboardPress(text);
           break;
         case "aiAssert":
-          await this.agents.getUIAgent().aiAssert(text);
+          await this.contextInstance.getAgents().getUIAgent().aiAssert(text);
           break;
         case "data": {
-          const { success, result, error } = await this.agents.getDataAgent().ask(text);
+          const { success, result, error } = await this.contextInstance.getAgents().getDataAgent().ask(text);
           if (success) {
             if (result) {
               this.context = { ...this.context, ...result };
@@ -92,7 +89,7 @@ export class ActionAgent implements Agent {
       return null;
     }
     const behaviorTextList = concept.behaviors.map((b) => b.text);
-    const matchedBehavior = await this.agents.getTextAgent().find(behaviorTextList, action.text);
+    const matchedBehavior = await this.contextInstance.getAgents().getTextAgent().find(behaviorTextList, action.text);
     return { behavior: concept.behaviors.find((b) => b.text === matchedBehavior.text), args: matchedBehavior.args };
   }
 }

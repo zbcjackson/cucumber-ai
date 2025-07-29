@@ -5,14 +5,11 @@ import { Agent } from "../agent";
 import { Cache } from "../cache";
 import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
+import { Context } from "../context";
 
 interface MatchedText {
   text: string;
   args: Record<string, string>;
-}
-
-interface TextMatcherOptions {
-  useCache?: boolean;
 }
 
 export class TextAgent implements Agent {
@@ -20,7 +17,7 @@ export class TextAgent implements Agent {
   private readonly cache: Cache;
   private systemPrompt: string;
 
-  constructor(private options: TextMatcherOptions = {}) {
+  constructor(private context: Context) {
     this.llm = new LLM();
     this.cache = new Cache("step-agent");
   }
@@ -32,7 +29,7 @@ export class TextAgent implements Agent {
   async stop() {}
 
   async find(predefinedTextList: string[], text: string) {
-    if (this.options.useCache) {
+    if (this.context.isCacheEnabled()) {
       const cachedResult = this.cache.readCache(this.getCacheKey(predefinedTextList, text));
       if (cachedResult) {
         return cachedResult;

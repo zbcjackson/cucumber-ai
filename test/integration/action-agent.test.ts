@@ -5,7 +5,7 @@ import { Driver } from "../../src";
 import { DataAgent } from "../../src/data-agent";
 import * as ConceptLoader from "../../src/loaders/concept-loader";
 import { ActionAgent } from "../../src/action-agent";
-import { Agents } from "../../src/agents";
+import { Context } from "../../src/context";
 
 vi.mock("../../src/loaders/concept-loader");
 
@@ -14,7 +14,6 @@ describe("ActionAgent", () => {
   let dataAgent: DataAgent;
   let driver: Driver;
   let actionAgent: ActionAgent;
-  let agents: Agents;
 
   beforeEach(() => {
     uiAgent = {
@@ -35,18 +34,20 @@ describe("ActionAgent", () => {
     } as unknown as DataAgent;
     driver = {} as unknown as Driver;
 
-    // Create a mock Agents class
-    agents = {
-      getUIAgent: vi.fn().mockReturnValue(uiAgent),
-      getDataAgent: vi.fn().mockReturnValue(dataAgent),
-      getTextAgent: vi.fn().mockReturnValue({
-        find: vi
-          .fn()
-          .mockResolvedValue({ text: "Check it shows '{{value}}' in the input field", args: { value: "name" } }),
+    // Create a mock Context class
+    const mockContext = {
+      getAgents: vi.fn().mockReturnValue({
+        getUIAgent: vi.fn().mockReturnValue(uiAgent),
+        getDataAgent: vi.fn().mockReturnValue(dataAgent),
+        getTextAgent: vi.fn().mockReturnValue({
+          find: vi
+            .fn()
+            .mockResolvedValue({ text: "Check it shows '{{value}}' in the input field", args: { value: "name" } }),
+        }),
       }),
-    } as unknown as Agents;
+    } as unknown as Context;
 
-    actionAgent = new ActionAgent(agents);
+    actionAgent = new ActionAgent(mockContext);
     vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([]);
   });
   afterEach(() => {

@@ -1,5 +1,5 @@
 import { Agent } from "../agent";
-import { Agents } from "../agents";
+import { Context } from "../context";
 import { loadSteps } from "../loaders/step-loader";
 import { Step } from "../loaders/step-parser";
 
@@ -10,10 +10,7 @@ interface StepAgentOptions {
 export class StepAgent implements Agent {
   private definedSteps: Step[];
 
-  constructor(
-    private agents: Agents,
-    options: StepAgentOptions = {},
-  ) {}
+  constructor(private context: Context) {}
 
   async start() {
     this.definedSteps = loadSteps();
@@ -27,12 +24,12 @@ export class StepAgent implements Agent {
       throw new Error(`Step not found: ${stepText}`);
     }
 
-    await this.agents.getActionAgent().executeActions(match.step.actions, match.args);
+    await this.context.getAgents().getActionAgent().executeActions(match.step.actions, match.args);
   }
 
   private async findMatchedStep(stepText: string) {
     const stepTextList = this.definedSteps.map((s) => s.text);
-    const matchedStep = await this.agents.getTextAgent().find(stepTextList, stepText);
+    const matchedStep = await this.context.getAgents().getTextAgent().find(stepTextList, stepText);
     return { step: this.definedSteps.find((s) => s.text === matchedStep.text), args: matchedStep.args };
   }
 }

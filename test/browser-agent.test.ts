@@ -2,10 +2,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
 import { Driver } from "../src";
 import { BrowserAgent } from "../src/browser-agent";
+import { Context } from "../src/context";
 
 describe("BrowserAgent", () => {
   let mockDriver: Driver;
   let agent: BrowserAgent;
+  let context: Context;
 
   beforeEach(async () => {
     mockDriver = {
@@ -16,8 +18,12 @@ describe("BrowserAgent", () => {
       addItemInLocalStorage: vi.fn(),
       quit: vi.fn(),
     } as unknown as Driver;
+    context = {
+      getDriver: () => mockDriver,
+      isCacheEnabled: () => false,
+    } as unknown as Context;
 
-    agent = new BrowserAgent(mockDriver, { useCache: false });
+    agent = new BrowserAgent(context);
     await agent.start();
   });
 

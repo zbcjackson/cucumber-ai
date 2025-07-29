@@ -15,6 +15,7 @@ import { Agent } from "../agent";
 import { Cache } from "../cache";
 import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
+import { Context } from "../context";
 
 interface Config {
   mcpServer: Record<
@@ -30,13 +31,9 @@ interface Config {
 }
 
 export async function db(prompt: string) {
-  const agent = new DataAgent();
-  await agent.start();
-  try {
-    return await agent.ask(prompt);
-  } finally {
-    await agent.stop();
-  }
+  // This function needs to be updated to use Context
+  // For now, we'll create a minimal context for backward compatibility
+  throw new Error("db() function needs to be updated to use Context");
 }
 
 interface DatabaseAgentOptions {
@@ -59,7 +56,7 @@ export class DataAgent implements Agent {
   private cache: Cache;
   private systemPrompt: string;
 
-  constructor(private options: DatabaseAgentOptions = {}) {
+  constructor(private context: Context) {
     this.started = false;
     this.cache = new Cache("data-agent");
     const configPath = join(rootPath, "config.json");
@@ -134,7 +131,7 @@ export class DataAgent implements Agent {
   public async ask(prompt: string, opts: { useCache?: boolean } = {}): Promise<Result> {
     return await this.printElapsedTime(async () => {
       if (opts.useCache === undefined) {
-        opts.useCache = this.options.useCache;
+        opts.useCache = this.context.isCacheEnabled();
       }
       if (opts.useCache && (await this.executeCachedToolCalls(prompt))) {
         return { success: true };

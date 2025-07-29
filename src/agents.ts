@@ -5,11 +5,8 @@ import { DataAgent } from "./data-agent";
 import { StepAgent } from "./step-agent";
 import { TextAgent } from "./text-agent";
 import { UIAgent } from "./ui-agent";
+import { Context } from "./context";
 import { Driver } from "./drivers/driver";
-
-export interface AgentsOptions {
-  useCache?: boolean;
-}
 
 export class Agents {
   private actionAgent: ActionAgent;
@@ -20,19 +17,26 @@ export class Agents {
   private uiAgent: UIAgent;
   private started = false;
 
-  constructor(
-    private driver: Driver,
-    private options: AgentsOptions = {},
-  ) {
-    // Initialize all agents
-    this.textAgent = new TextAgent({ useCache: options.useCache });
-    this.uiAgent = new UIAgent(this.driver);
-    this.dataAgent = new DataAgent({ useCache: options.useCache });
-    this.browserAgent = new BrowserAgent(this.driver, { useCache: options.useCache });
-
-    // ActionAgent and StepAgent need access to this Agents instance
-    this.actionAgent = new ActionAgent(this, { useCache: options.useCache });
-    this.stepAgent = new StepAgent(this, { useCache: options.useCache });
+  constructor(driverOrContext: Driver | Context, options?: { useCache?: boolean }) {
+    if (driverOrContext instanceof Driver) {
+      // Legacy constructor - create a temporary context
+      const tempContext = new Context(driverOrContext, null, options || {});
+      this.textAgent = new TextAgent(tempContext);
+      this.uiAgent = new UIAgent(tempContext);
+      this.dataAgent = new DataAgent(tempContext);
+      this.browserAgent = new BrowserAgent(tempContext);
+      this.actionAgent = new ActionAgent(tempContext);
+      this.stepAgent = new StepAgent(tempContext);
+    } else {
+      // New constructor with Context
+      const context = driverOrContext;
+      this.textAgent = new TextAgent(context);
+      this.uiAgent = new UIAgent(context);
+      this.dataAgent = new DataAgent(context);
+      this.browserAgent = new BrowserAgent(context);
+      this.actionAgent = new ActionAgent(context);
+      this.stepAgent = new StepAgent(context);
+    }
   }
 
   /**
