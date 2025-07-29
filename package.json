@@ -24,7 +24,7 @@
   "scripts": {
     "copy-md": "cpx \"src/**/*.md\" dist",
     "build": "tsc && pnpm copy-md",
-    "lint": "biome check",
+    "lint": "tsc --noEmit && biome check",
     "test": "vitest run",
     "demo": "node bin/cucumber-js.js",
     "prepublishOnly": "pnpm build"
