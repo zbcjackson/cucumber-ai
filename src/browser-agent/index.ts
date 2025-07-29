@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   ChatCompletionMessage,
   ChatCompletionMessageParam,
+  ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 import { ActionAgent } from "../action-agent";
@@ -217,15 +218,12 @@ export class BrowserAgent implements Agent {
 
       while (message.tool_calls && message.tool_calls.length > 0) {
         for (const toolCall of message.tool_calls) {
-          const toolName = toolCall.function.name;
-          const args = JSON.parse(toolCall.function.arguments);
-
-          const result = await this.toolMap[toolName](args);
+          const result = await this.callTool(toolCall);
 
           messages.push({
             role: "tool",
             tool_call_id: toolCall.id,
-            content: JSON.stringify(result),
+            content: result,
           });
         }
 
@@ -249,6 +247,13 @@ export class BrowserAgent implements Agent {
     });
   }
 
+  private async callTool(toolCall: ChatCompletionMessageToolCall): Promise<string> {
+    const toolName = toolCall.function.name;
+    const args = JSON.parse(toolCall.function.arguments);
+
+    return JSON.stringify(await this.toolMap[toolName](args));
+  }
+
   private async printElapsedTime<T>(func: () => Promise<T>) {
     const start = Date.now();
     const result = await func();
@@ -261,9 +266,7 @@ export class BrowserAgent implements Agent {
     const cachedToolCalls = this.cache.readCache(prompt) || [];
     if (cachedToolCalls.length > 0) {
       for (const toolCall of cachedToolCalls) {
-        const toolName = toolCall.function.name;
-        const args = JSON.parse(toolCall.function.arguments);
-        await this.toolMap[toolName](args);
+        await this.callTool(toolCall);
       }
       return true;
     }
