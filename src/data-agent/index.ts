@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { CallToolResult, CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
+import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { path as rootPath } from "app-root-path";
 import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
@@ -22,12 +22,6 @@ interface Config {
       env?: Record<string, string>;
     }
   >;
-}
-
-interface Result {
-  success: boolean;
-  error?: string;
-  result?: Record<string, string>;
 }
 
 export class DataAgent implements Agent {
@@ -110,7 +104,7 @@ export class DataAgent implements Agent {
     this.started = false;
   }
 
-  public async ask(prompt: string, opts: { useCache?: boolean } = {}): Promise<Result> {
+  public async ask(prompt: string, opts: { useCache?: boolean } = {}) {
     const callTool = async (toolCall: ChatCompletionMessageToolCall): Promise<ChatCompletionContentPartText[]> => {
       const result = CallToolResultSchema.parse(
         await this.toolMap[toolCall.function.name].callTool({

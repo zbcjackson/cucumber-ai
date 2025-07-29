@@ -1,25 +1,9 @@
 import fs from "node:fs";
 import { join } from "node:path";
-import {
-  ChatCompletionMessageToolCall,
-  ChatCompletionTool,
-} from "openai/resources/chat/completions/completions";
-import { ActionAgent } from "../action-agent";
+import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
 import { Agent } from "../agent";
-import { Agents } from "../agents";
 import { Context } from "../context";
-import { DataAgent } from "../data-agent";
-import { Driver } from "../drivers/driver";
 import { LLM } from "../llm/openai";
-import { StepAgent } from "../step-agent";
-import { TextAgent } from "../text-agent";
-import { UIAgent } from "../ui-agent";
-
-interface Result {
-  success: boolean;
-  error?: string;
-  result?: Record<string, string>;
-}
 
 interface ToolResult {
   action: string;
@@ -186,7 +170,7 @@ export class BrowserAgent implements Agent {
     }
   }
 
-  public async ask(prompt: string, opts: { useCache?: boolean } = {}): Promise<Result> {
+  public async ask(prompt: string, opts: { useCache?: boolean } = {}) {
     const callTool = async (toolCall: ChatCompletionMessageToolCall): Promise<string> => {
       const toolName = toolCall.function.name;
       const args = JSON.parse(toolCall.function.arguments);

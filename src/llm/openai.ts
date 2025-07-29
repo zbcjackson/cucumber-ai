@@ -9,7 +9,7 @@ import { ChatCompletionContentPartText } from "openai/src/resources/chat/complet
 import { Cache } from "../cache";
 import { parseJson } from "../utils/json";
 
-interface Result {
+export interface Result {
   success: boolean;
   error?: string;
   result?: Record<string, string>;
