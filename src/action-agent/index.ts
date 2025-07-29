@@ -28,36 +28,99 @@ export class ActionAgent implements Agent {
         `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.actionContext)}`,
       );
       switch (action.name) {
-        case "browser":
-          await this.context.getBrowserAgent().ask(text);
+        case "browser": {
+          const { success, result, error } = await this.context.getBrowserAgent().ask(text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`Browser action failed: ${error}`);
+          }
           break;
-        case "ai":
-          await this.context.getUIAgent().ai(text);
+        }
+        case "ai": {
+          const { success, result, error } = await this.context.getUIAgent().ai(text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI action failed: ${error}`);
+          }
           break;
-        case "aiTap":
-          await this.context.getUIAgent().aiTap(text);
+        }
+        case "aiTap": {
+          const { success, result, error } = await this.context.getUIAgent().aiTap(text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI tap action failed: ${error}`);
+          }
           break;
-        case "aiInput":
-          await this.context.getUIAgent().aiInput(arg, text);
+        }
+        case "aiInput": {
+          const { success, result, error } = await this.context.getUIAgent().aiInput(arg, text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI input action failed: ${error}`);
+          }
           break;
-        case "aiHover":
-          await this.context.getUIAgent().aiHover(text);
+        }
+        case "aiHover": {
+          const { success, result, error } = await this.context.getUIAgent().aiHover(text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI hover action failed: ${error}`);
+          }
           break;
-        case "aiWaitFor":
-          await this.context.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
+        }
+        case "aiWaitFor": {
+          const { success, result, error } = await this.context.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI wait for action failed: ${error}`);
+          }
           break;
-        case "aiKeyboardPress":
-          await this.context.getUIAgent().aiKeyboardPress(text);
+        }
+        case "aiKeyboardPress": {
+          const { success, result, error } = await this.context.getUIAgent().aiKeyboardPress(text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI keyboard press action failed: ${error}`);
+          }
           break;
-        case "aiAssert":
-          await this.context.getUIAgent().aiAssert(text);
+        }
+        case "aiAssert": {
+          const { success, result, error } = await this.context.getUIAgent().aiAssert(text);
+          if (success) {
+            if (result) {
+              this.updateContext(result);
+            }
+          } else {
+            throw new Error(`AI assert action failed: ${error}`);
+          }
           break;
+        }
         case "data": {
           const { success, result, error } = await this.context.getDataAgent().ask(text);
           if (success) {
             if (result) {
-              this.actionContext = { ...this.actionContext, ...result };
-              console.log(`Update context: ${JSON.stringify(this.actionContext)}`);
+              this.updateContext(result);
             }
           } else {
             throw new Error(`Data action failed: ${error}`);
@@ -77,6 +140,13 @@ export class ActionAgent implements Agent {
 
   private replaceArgValue(text: string, args: Record<string, string> = {}): string {
     return text.replace(/\[\[(.*?)]]/g, (_, key) => args[key.trim()] || this.actionContext[key.trim()] || "");
+  }
+
+  private updateContext(result: Record<string, string> | undefined) {
+    if (result) {
+      this.actionContext = { ...this.actionContext, ...result };
+      console.log(`Update context: ${JSON.stringify(this.actionContext)}`);
+    }
   }
 
   private async findMatchedBehavior(action: Action) {
