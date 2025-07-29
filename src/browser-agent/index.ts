@@ -5,6 +5,7 @@ import {
   ChatCompletionMessageParam,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
+import { Agent } from "../agent";
 import { Cache } from "../cache";
 import { Driver } from "../drivers/driver";
 import { LLM } from "../llm/openai";
@@ -27,7 +28,7 @@ interface ToolResult {
 
 type ToolFunction = (args: Record<string, unknown>) => Promise<ToolResult>;
 
-export class BrowserAgent {
+export class BrowserAgent implements Agent {
   private driver: Driver;
   private llm: LLM;
   private started: boolean;

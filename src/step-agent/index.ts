@@ -1,3 +1,4 @@
+import { Agent } from "../agent";
 import { loadSteps } from "../loaders/step-loader";
 import { Step } from "../loaders/step-parser";
 import { ActionAgent } from "../action-agent";
@@ -7,7 +8,7 @@ interface StepAgentOptions {
   useCache?: boolean;
 }
 
-export class StepAgent {
+export class StepAgent implements Agent {
   private definedSteps: Step[];
   private textAgent: TextAgent;
 

@@ -11,6 +11,7 @@ import {
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
+import { Agent } from "../agent";
 import { Cache } from "../cache";
 import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
@@ -48,7 +49,7 @@ interface Result {
   result?: Record<string, string>;
 }
 
-export class DataAgent {
+export class DataAgent implements Agent {
   private config: Config;
   private clients: Client[] = [];
   private tools: ChatCompletionTool[] = [];

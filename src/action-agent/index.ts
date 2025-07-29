@@ -1,3 +1,4 @@
+import { Agent } from "../agent";
 import { BrowserAgent } from "../browser-agent";
 import { DataAgent } from "../data-agent";
 import { Driver } from "../drivers/driver";
@@ -11,7 +12,7 @@ interface ActionAgentOptions {
   useCache?: boolean;
 }
 
-export class ActionAgent {
+export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
   private uiAgent: UIAgent;
   private dataAgent: DataAgent;

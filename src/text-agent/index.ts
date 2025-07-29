@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
+import { Agent } from "../agent";
 import { Cache } from "../cache";
 import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
@@ -14,7 +15,7 @@ interface TextMatcherOptions {
   useCache?: boolean;
 }
 
-export class TextAgent {
+export class TextAgent implements Agent {
   private readonly llm: LLM;
   private readonly cache: Cache;
   private systemPrompt: string;

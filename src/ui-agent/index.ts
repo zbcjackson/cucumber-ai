@@ -1,7 +1,8 @@
 import { PlaywrightAgent } from "@midscene/web";
+import { Agent } from "../agent";
 import { Driver } from "../drivers/driver";
 
-export class UIAgent {
+export class UIAgent implements Agent {
   private agent: PlaywrightAgent;
   private started = false;
 
