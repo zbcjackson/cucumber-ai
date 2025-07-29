@@ -32,7 +32,7 @@ export class ActionAgent implements Agent {
       );
 
       if (this.actions.has(action.name)) {
-        const { success, result, error } = await this.actions.execute(action.name, text, arg, this.actionContext);
+        const { success, result, error } = await this.actions.execute(action.name, text, arg);
         if (success) {
           if (result) {
             this.updateContext(result);

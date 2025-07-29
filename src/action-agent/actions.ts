@@ -3,7 +3,6 @@ import { Context } from "../context";
 export type ActionHandler = (
   text: string,
   arg: string | undefined,
-  context: Record<string, string>,
 ) => Promise<{ success: boolean; result?: Record<string, string>; error?: string }>;
 
 export class Actions {
@@ -21,7 +20,6 @@ export class Actions {
     name: string,
     text: string,
     arg: string | undefined,
-    context: Record<string, string>,
   ): Promise<{ success: boolean; result?: Record<string, string>; error?: string }> {
     const handler = this.handlers.get(name);
     if (!handler) {
@@ -32,7 +30,7 @@ export class Actions {
     }
 
     try {
-      return await handler(text, arg, context);
+      return await handler(text, arg);
     } catch (error) {
       return {
         success: false,
