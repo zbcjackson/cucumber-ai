@@ -1,9 +1,9 @@
 import { World } from "@cucumber/cucumber";
 import type { IWorldOptions } from "@cucumber/cucumber/lib/support_code_library_builder/world";
-import { Driver } from "./drivers/driver";
-import { Action } from "./loaders/action-parser";
 import { Agents } from "./agents";
 import { Context } from "./context";
+import { Driver } from "./drivers/driver";
+import { Action } from "./loaders/action-parser";
 
 export interface Options {
   headless?: boolean;
@@ -24,7 +24,6 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
       headless: this.parameters.headless,
       logging: this.parameters.logging,
       disableCache: this.parameters.disableCache,
-      useCache: !this.parameters.disableCache,
     });
   }
 

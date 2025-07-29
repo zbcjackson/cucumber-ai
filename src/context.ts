@@ -5,7 +5,6 @@ export interface Options {
   headless?: boolean;
   logging?: boolean;
   disableCache?: boolean;
-  useCache?: boolean;
 }
 
 export class Context {
@@ -47,7 +46,7 @@ export class Context {
    * Check if cache is enabled
    */
   isCacheEnabled(): boolean {
-    return !this.options.disableCache && this.options.useCache !== false;
+    return !this.options.disableCache;
   }
 
   /**
