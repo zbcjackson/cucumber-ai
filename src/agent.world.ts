@@ -16,11 +16,7 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
 
   constructor(options: IWorldOptions<T & Options>) {
     super(options);
-    const driver = new Driver();
-    const agents = new Agents(driver, {
-      useCache: !this.parameters.disableCache,
-    });
-    this._context = new Context(driver, agents, {
+    this._context = new Context({
       headless: this.parameters.headless,
       logging: this.parameters.logging,
       disableCache: this.parameters.disableCache,
@@ -29,10 +25,6 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
 
   get driver(): Driver {
     return this._context.getDriver();
-  }
-
-  get agents(): Agents {
-    return this._context.getAgents();
   }
 
   get context(): Context {
@@ -44,11 +36,11 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
   }
 
   async executeStep(stepText: string) {
-    await this.context.getAgents().getStepAgent().executeStep(stepText);
+    await this.context.getStepAgent().executeStep(stepText);
   }
 
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
-    await this.context.getAgents().getActionAgent().executeActions(actions, args);
+    await this.context.getActionAgent().executeActions(actions, args);
   }
 
   async quit() {

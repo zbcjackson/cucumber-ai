@@ -24,12 +24,12 @@ export class StepAgent implements Agent {
       throw new Error(`Step not found: ${stepText}`);
     }
 
-    await this.context.getAgents().getActionAgent().executeActions(match.step.actions, match.args);
+    await this.context.getActionAgent().executeActions(match.step.actions, match.args);
   }
 
   private async findMatchedStep(stepText: string) {
     const stepTextList = this.definedSteps.map((s) => s.text);
-    const matchedStep = await this.context.getAgents().getTextAgent().find(stepTextList, stepText);
+    const matchedStep = await this.context.getTextAgent().find(stepTextList, stepText);
     return { step: this.definedSteps.find((s) => s.text === matchedStep.text), args: matchedStep.args };
   }
 }

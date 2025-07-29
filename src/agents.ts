@@ -62,44 +62,26 @@ export class Agents {
     this.started = false;
   }
 
-  /**
-   * Get the ActionAgent
-   */
   getActionAgent(): ActionAgent {
     return this.actionAgent;
   }
 
-  /**
-   * Get the BrowserAgent
-   */
   getBrowserAgent(): BrowserAgent {
     return this.browserAgent;
   }
 
-  /**
-   * Get the DataAgent
-   */
   getDataAgent(): DataAgent {
     return this.dataAgent;
   }
 
-  /**
-   * Get the StepAgent
-   */
   getStepAgent(): StepAgent {
     return this.stepAgent;
   }
 
-  /**
-   * Get the TextAgent
-   */
   getTextAgent(): TextAgent {
     return this.textAgent;
   }
 
-  /**
-   * Get the UIAgent
-   */
   getUIAgent(): UIAgent {
     return this.uiAgent;
   }

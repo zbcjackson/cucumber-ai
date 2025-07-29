@@ -23,10 +23,8 @@ describe("Step Agent", () => {
     };
 
     mockContext = {
-      getAgents: vi.fn().mockReturnValue({
-        getActionAgent: vi.fn().mockReturnValue(actionAgent),
-        getTextAgent: vi.fn().mockReturnValue(textAgent),
-      }),
+      getActionAgent: vi.fn().mockReturnValue(actionAgent),
+      getTextAgent: vi.fn().mockReturnValue(textAgent),
     } as unknown as Context;
 
     stepAgent = new StepAgent(mockContext);
@@ -49,7 +47,7 @@ describe("Step Agent", () => {
       },
     ]);
 
-    const textAgent = mockContext.getAgents().getTextAgent();
+    const textAgent = mockContext.getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: "add", args: {} });
 
     await stepAgent.start();
@@ -80,7 +78,7 @@ describe("Step Agent", () => {
       },
     ]);
 
-    const textAgent = mockContext.getAgents().getTextAgent();
+    const textAgent = mockContext.getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: "add '{{value}}'", args: { value: "name" } });
 
     await stepAgent.start();
@@ -111,7 +109,7 @@ describe("Step Agent", () => {
       },
     ]);
 
-    const textAgent = mockContext.getAgents().getTextAgent();
+    const textAgent = mockContext.getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: "add '{{value}}'", args: { value: "name" } });
 
     await stepAgent.start();
@@ -142,7 +140,7 @@ describe("Step Agent", () => {
       },
     ]);
 
-    const textAgent = mockContext.getAgents().getTextAgent();
+    const textAgent = mockContext.getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: 'the thought "{{value}}" is shown', args: { value: "name" } });
 
     await stepAgent.start();
@@ -173,7 +171,7 @@ describe("Step Agent", () => {
       },
     ]);
 
-    const textAgent = mockContext.getAgents().getTextAgent();
+    const textAgent = mockContext.getTextAgent();
     vi.mocked(textAgent.find).mockResolvedValue({ text: 'the thought "{{value}}" is shown', args: { value: "name" } });
 
     await stepAgent.start();

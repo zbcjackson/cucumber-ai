@@ -1,5 +1,11 @@
+import { ActionAgent } from "./action-agent";
 import { Agents } from "./agents";
+import { BrowserAgent } from "./browser-agent";
+import { DataAgent } from "./data-agent";
 import { Driver } from "./drivers/driver";
+import { StepAgent } from "./step-agent";
+import { TextAgent } from "./text-agent";
+import { UIAgent } from "./ui-agent";
 
 export interface Options {
   headless?: boolean;
@@ -8,11 +14,13 @@ export interface Options {
 }
 
 export class Context {
-  constructor(
-    private driver: Driver,
-    private agents: Agents,
-    private options: Options = {},
-  ) {}
+  private readonly driver: Driver;
+  private readonly agents: Agents;
+
+  constructor(private options: Options = {}) {
+    this.driver = new Driver();
+    this.agents = new Agents(this);
+  }
 
   /**
    * Get the Driver instance
@@ -21,11 +29,28 @@ export class Context {
     return this.driver;
   }
 
-  /**
-   * Get the Agents instance
-   */
-  getAgents(): Agents {
-    return this.agents;
+  getActionAgent(): ActionAgent {
+    return this.agents.getActionAgent();
+  }
+
+  getBrowserAgent(): BrowserAgent {
+    return this.agents.getBrowserAgent();
+  }
+
+  getDataAgent(): DataAgent {
+    return this.agents.getDataAgent();
+  }
+
+  getStepAgent(): StepAgent {
+    return this.agents.getStepAgent();
+  }
+
+  getTextAgent(): TextAgent {
+    return this.agents.getTextAgent();
+  }
+
+  getUIAgent(): UIAgent {
+    return this.agents.getUIAgent();
   }
 
   /**
