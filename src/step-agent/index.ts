@@ -3,10 +3,6 @@ import { Context } from "../context";
 import { loadSteps } from "../loaders/step-loader";
 import { Step } from "../loaders/step-parser";
 
-interface StepAgentOptions {
-  useCache?: boolean;
-}
-
 export class StepAgent implements Agent {
   private definedSteps: Step[];
 

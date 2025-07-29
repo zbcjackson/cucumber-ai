@@ -30,16 +30,6 @@ interface Config {
   >;
 }
 
-export async function db(prompt: string) {
-  // This function needs to be updated to use Context
-  // For now, we'll create a minimal context for backward compatibility
-  throw new Error("db() function needs to be updated to use Context");
-}
-
-interface DatabaseAgentOptions {
-  useCache?: boolean;
-}
-
 interface Result {
   success: boolean;
   error?: string;

@@ -18,10 +18,6 @@ import { TextAgent } from "../text-agent";
 import { UIAgent } from "../ui-agent";
 import { parseJson } from "../utils/json";
 
-interface BrowserAgentOptions {
-  useCache?: boolean;
-}
-
 interface Result {
   success: boolean;
   error?: string;

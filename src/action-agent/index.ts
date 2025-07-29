@@ -4,10 +4,6 @@ import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
 
-interface ActionAgentOptions {
-  useCache?: boolean;
-}
-
 export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
   private actionContext: Record<string, string>;
