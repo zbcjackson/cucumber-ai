@@ -8,6 +8,7 @@ import { Driver } from "../src/drivers/driver";
 import { StepAgent } from "../src/step-agent";
 import { TextAgent } from "../src/text-agent";
 import { UIAgent } from "../src/ui-agent";
+import { Actions } from "../src/action-agent/actions";
 
 /**
  * Creates a mock Context with all public methods mocked
@@ -71,21 +72,9 @@ export function mockContext(): Context {
     aiAssert: vi.fn().mockResolvedValue({ success: true }),
   } as unknown as UIAgent;
 
-  // Mock Agents class
-  const mockAgents = {
-    start: vi.fn().mockResolvedValue(undefined),
-    stop: vi.fn().mockResolvedValue(undefined),
-    getActionAgent: vi.fn().mockReturnValue(mockActionAgent),
-    getBrowserAgent: vi.fn().mockReturnValue(mockBrowserAgent),
-    getDataAgent: vi.fn().mockReturnValue(mockDataAgent),
-    getStepAgent: vi.fn().mockReturnValue(mockStepAgent),
-    getTextAgent: vi.fn().mockReturnValue(mockTextAgent),
-    getUIAgent: vi.fn().mockReturnValue(mockUIAgent),
-  };
-
-  // Mock Context
   const mockContext = {
     getDriver: vi.fn().mockReturnValue(mockDriver),
+    getActions: vi.fn().mockReturnValue(new Actions()),
     getActionAgent: vi.fn().mockReturnValue(mockActionAgent),
     getBrowserAgent: vi.fn().mockReturnValue(mockBrowserAgent),
     getDataAgent: vi.fn().mockReturnValue(mockDataAgent),

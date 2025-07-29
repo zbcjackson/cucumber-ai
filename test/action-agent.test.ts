@@ -1,23 +1,21 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { UIAgent } from "../src/ui-agent";
+import { afterEach, beforeEach, describe, expect, it, MockedFunction, vi } from "vitest";
 import "dotenv/config";
 import { ActionAgent } from "../src/action-agent";
-import { DataAgent } from "../src/data-agent";
 import * as ConceptLoader from "../src/loaders/concept-loader";
 import { mockContext } from "./utils";
+import { ActionHandler } from "../src/action-agent/actions";
 
 vi.mock("../src/loaders/concept-loader");
 
 describe("ActionAgent", () => {
-  let uiAgent: UIAgent;
-  let dataAgent: DataAgent;
   let actionAgent: ActionAgent;
   let context: ReturnType<typeof mockContext>;
+  let aiAction: MockedFunction<ActionHandler>;
 
   beforeEach(() => {
     context = mockContext();
-    uiAgent = context.getUIAgent();
-    dataAgent = context.getDataAgent();
+    aiAction = vi.fn().mockResolvedValue({ success: true });
+    context.getActions().register("ai", aiAction);
 
     vi.mocked(context.getTextAgent().find).mockResolvedValue({
       text: "Check it shows '{{value}}' in the input field",
@@ -39,7 +37,7 @@ describe("ActionAgent", () => {
         text: "click add button",
       },
     ]);
-    expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
+    expect(aiAction).toHaveBeenCalledWith("click add button", undefined);
   });
   it("should execute defined step with parameter", async () => {
     await actionAgent.start();
@@ -53,7 +51,7 @@ describe("ActionAgent", () => {
       ],
       { value: "name" },
     );
-    expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
+    expect(aiAction).toHaveBeenCalledWith("click add button", undefined);
   });
   it("should replace parameter in the action text", async () => {
     await actionAgent.start();
@@ -67,7 +65,7 @@ describe("ActionAgent", () => {
       ],
       { value: "name" },
     );
-    expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
+    expect(aiAction).toHaveBeenCalledWith("input 'name' in the input field", undefined);
   });
   it("should match step with same intention", async () => {
     await actionAgent.start();
@@ -81,7 +79,7 @@ describe("ActionAgent", () => {
       ],
       { value: "name" },
     );
-    expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
+    expect(aiAction).toHaveBeenCalledWith("input 'name' in the input field", undefined);
   });
   it("should support concept behaviors", async () => {
     vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([
@@ -114,6 +112,6 @@ describe("ActionAgent", () => {
       ],
       { value: "name" },
     );
-    expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
+    expect(aiAction).toHaveBeenCalledWith("input 'name' in the input field", undefined);
   }, 300000);
 });

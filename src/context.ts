@@ -1,4 +1,5 @@
 import { ActionAgent } from "./action-agent";
+import { Actions } from "./action-agent/actions";
 import { Agents } from "./agents";
 import { BrowserAgent } from "./browser-agent";
 import { DataAgent } from "./data-agent";
@@ -16,15 +17,14 @@ export interface Options {
 export class Context {
   private readonly driver: Driver;
   private readonly agents: Agents;
+  private readonly actions: Actions;
 
   constructor(private options: Options = {}) {
     this.driver = new Driver();
+    this.actions = new Actions();
     this.agents = new Agents(this);
   }
 
-  /**
-   * Get the Driver instance
-   */
   getDriver(): Driver {
     return this.driver;
   }
@@ -51,6 +51,10 @@ export class Context {
 
   getUIAgent(): UIAgent {
     return this.agents.getUIAgent();
+  }
+
+  getActions(): Actions {
+    return this.actions;
   }
 
   /**
@@ -97,6 +101,7 @@ export class Context {
       logging: this.isLoggingEnabled(),
     });
     await this.agents.start();
+    this.registerDefaultActions();
   }
 
   /**
@@ -105,5 +110,55 @@ export class Context {
   async quit(): Promise<void> {
     await this.agents.stop();
     await this.driver.quit();
+  }
+
+  /**
+   * Register default actions with the ActionAgent
+   */
+  private registerDefaultActions(): void {
+    this.actions.register("browser", async (text) => {
+      const { success, result, error } = await this.getBrowserAgent().ask(text);
+      return { success, result, error };
+    });
+
+    this.actions.register("ai", async (text) => {
+      const { success, result, error } = await this.getUIAgent().ai(text);
+      return { success, result, error };
+    });
+
+    this.actions.register("aiTap", async (text) => {
+      const { success, result, error } = await this.getUIAgent().aiTap(text);
+      return { success, result, error };
+    });
+
+    this.actions.register("aiInput", async (text, arg) => {
+      const { success, result, error } = await this.getUIAgent().aiInput(arg, text);
+      return { success, result, error };
+    });
+
+    this.actions.register("aiHover", async (text) => {
+      const { success, result, error } = await this.getUIAgent().aiHover(text);
+      return { success, result, error };
+    });
+
+    this.actions.register("aiWaitFor", async (text) => {
+      const { success, result, error } = await this.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
+      return { success, result, error };
+    });
+
+    this.actions.register("aiKeyboardPress", async (text) => {
+      const { success, result, error } = await this.getUIAgent().aiKeyboardPress(text);
+      return { success, result, error };
+    });
+
+    this.actions.register("aiAssert", async (text) => {
+      const { success, result, error } = await this.getUIAgent().aiAssert(text);
+      return { success, result, error };
+    });
+
+    this.actions.register("data", async (text) => {
+      const { success, result, error } = await this.getDataAgent().ask(text);
+      return { success, result, error };
+    });
   }
 }

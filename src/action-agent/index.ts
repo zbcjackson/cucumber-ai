@@ -3,16 +3,13 @@ import { Context } from "../context";
 import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
-import { Actions } from "./actions";
 
 export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
   private actionContext: Record<string, string>;
-  private actions: Actions;
 
   constructor(private context: Context) {
     this.actionContext = {};
-    this.actions = new Actions(context);
   }
 
   async start() {
@@ -31,8 +28,8 @@ export class ActionAgent implements Agent {
         `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.actionContext)}`,
       );
 
-      if (this.actions.has(action.name)) {
-        const { success, result, error } = await this.actions.execute(action.name, text, arg);
+      if (this.context.getActions().has(action.name)) {
+        const { success, result, error } = await this.context.getActions().execute(action.name, text, arg);
         if (success) {
           if (result) {
             this.updateContext(result);
