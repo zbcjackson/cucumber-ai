@@ -1,4 +1,4 @@
-import { ActionAgent } from "./action-agent";
+import { ActionAgent, ConceptAgent } from "./action-agent";
 import { BrowserAgent } from "./browser-agent";
 import { Context } from "./context";
 import { DataAgent } from "./data-agent";
@@ -9,6 +9,7 @@ import { UIAgent } from "./ui-agent";
 export class Agents {
   private readonly actionAgent: ActionAgent;
   private readonly browserAgent: BrowserAgent;
+  private readonly conceptAgent: ConceptAgent;
   private readonly dataAgent: DataAgent;
   private readonly stepAgent: StepAgent;
   private readonly textAgent: TextAgent;
@@ -23,6 +24,7 @@ export class Agents {
     this.dataAgent = new DataAgent(context);
     this.browserAgent = new BrowserAgent(context);
     this.actionAgent = new ActionAgent(context);
+    this.conceptAgent = new ConceptAgent(context);
     this.stepAgent = new StepAgent(context);
   }
 
@@ -36,6 +38,7 @@ export class Agents {
     await this.dataAgent.start();
     await this.browserAgent.start();
     await this.actionAgent.start();
+    await this.conceptAgent.start();
     await this.stepAgent.start();
 
     this.started = true;
@@ -47,6 +50,7 @@ export class Agents {
     }
 
     await this.stepAgent.stop();
+    await this.conceptAgent.stop();
     await this.actionAgent.stop();
     await this.browserAgent.stop();
     await this.dataAgent.stop();
@@ -62,6 +66,10 @@ export class Agents {
 
   getBrowserAgent(): BrowserAgent {
     return this.browserAgent;
+  }
+
+  getConceptAgent(): ConceptAgent {
+    return this.conceptAgent;
   }
 
   getDataAgent(): DataAgent {

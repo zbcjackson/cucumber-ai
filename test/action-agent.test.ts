@@ -82,37 +82,4 @@ describe("ActionAgent", () => {
     );
     expect(aiAction).toHaveBeenCalledWith("input 'name' in the input field", undefined);
   });
-  it("should support concept behaviors", async () => {
-    vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([
-      {
-        name: "MainPage",
-        type: "concept",
-        behaviors: [
-          {
-            type: "behavior",
-            text: "Check it shows '{{value}}' in the input field",
-            actions: [
-              {
-                type: "action",
-                name: "ai",
-                text: "input '[[value]]' in the input field",
-              },
-            ],
-          },
-        ],
-      },
-    ]);
-    await actionAgent.start();
-    await actionAgent.executeActions(
-      [
-        {
-          name: "MainPage",
-          type: "action",
-          text: "Check it shows '[[value]]' in the input field",
-        },
-      ],
-      { value: "name" },
-    );
-    expect(aiAction).toHaveBeenCalledWith("input 'name' in the input field", undefined);
-  }, 300000);
 });

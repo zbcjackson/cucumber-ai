@@ -1,6 +1,6 @@
 import type { Page } from "playwright";
 import { vi } from "vitest";
-import { ActionAgent } from "../src/action-agent";
+import { ActionAgent, ConceptAgent } from "../src/action-agent";
 import { BrowserAgent } from "../src/browser-agent";
 import { Context } from "../src/context";
 import { DataAgent } from "../src/data-agent";
@@ -52,6 +52,14 @@ export function mockContext(): Context {
     executeStep: vi.fn().mockResolvedValue(undefined),
   } as unknown as StepAgent;
 
+  const mockConceptAgent = {
+    start: vi.fn().mockResolvedValue(undefined),
+    stop: vi.fn().mockResolvedValue(undefined),
+    executeBehavior: vi.fn().mockResolvedValue(undefined),
+    registerActions: vi.fn().mockReturnValue(undefined),
+    unregisterActions: vi.fn().mockReturnValue(undefined),
+  } as unknown as ConceptAgent;
+
   const mockTextAgent = {
     start: vi.fn().mockResolvedValue(undefined),
     stop: vi.fn().mockResolvedValue(undefined),
@@ -77,6 +85,7 @@ export function mockContext(): Context {
     getActions: vi.fn().mockReturnValue(new Actions()),
     getActionAgent: vi.fn().mockReturnValue(mockActionAgent),
     getBrowserAgent: vi.fn().mockReturnValue(mockBrowserAgent),
+    getConceptAgent: vi.fn().mockReturnValue(mockConceptAgent),
     getDataAgent: vi.fn().mockReturnValue(mockDataAgent),
     getStepAgent: vi.fn().mockReturnValue(mockStepAgent),
     getTextAgent: vi.fn().mockReturnValue(mockTextAgent),

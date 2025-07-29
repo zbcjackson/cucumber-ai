@@ -1,4 +1,4 @@
-import { ActionAgent } from "./action-agent";
+import { ActionAgent, ConceptAgent } from "./action-agent";
 import { Actions } from "./action-agent/actions";
 import { Agents } from "./agents";
 import { BrowserAgent } from "./browser-agent";
@@ -35,6 +35,10 @@ export class Context {
 
   getBrowserAgent(): BrowserAgent {
     return this.agents.getBrowserAgent();
+  }
+
+  getConceptAgent(): ConceptAgent {
+    return this.agents.getConceptAgent();
   }
 
   getDataAgent(): DataAgent {
