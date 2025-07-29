@@ -1,9 +1,7 @@
 import { ActionAgent } from "./action-agent";
-import { Agent } from "./agent";
 import { BrowserAgent } from "./browser-agent";
 import { Context } from "./context";
 import { DataAgent } from "./data-agent";
-import { Driver } from "./drivers/driver";
 import { StepAgent } from "./step-agent";
 import { TextAgent } from "./text-agent";
 import { UIAgent } from "./ui-agent";
@@ -104,19 +102,5 @@ export class Agents {
    */
   getUIAgent(): UIAgent {
     return this.uiAgent;
-  }
-
-  /**
-   * Get all agents as an array
-   */
-  getAllAgents(): Agent[] {
-    return [this.textAgent, this.uiAgent, this.dataAgent, this.browserAgent, this.actionAgent, this.stepAgent];
-  }
-
-  /**
-   * Check if agents are started
-   */
-  isStarted(): boolean {
-    return this.started;
   }
 }
