@@ -1,7 +1,7 @@
-import { Driver } from "./drivers/driver";
 import { Agents } from "./agents";
+import { Driver } from "./drivers/driver";
 
-export interface ContextOptions {
+export interface Options {
   headless?: boolean;
   logging?: boolean;
   disableCache?: boolean;
@@ -12,7 +12,7 @@ export class Context {
   constructor(
     private driver: Driver,
     private agents: Agents,
-    private options: ContextOptions = {},
+    private options: Options = {},
   ) {}
 
   /**
@@ -32,14 +32,14 @@ export class Context {
   /**
    * Get all options
    */
-  getOptions(): ContextOptions {
+  getOptions(): Options {
     return this.options;
   }
 
   /**
    * Get a specific option value
    */
-  getOption<K extends keyof ContextOptions>(key: K): ContextOptions[K] {
+  getOption<K extends keyof Options>(key: K): Options[K] {
     return this.options[key];
   }
 
