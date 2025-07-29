@@ -1,12 +1,8 @@
 import { Agent } from "../agent";
-import { BrowserAgent } from "../browser-agent";
-import { DataAgent } from "../data-agent";
-import { Driver } from "../drivers/driver";
+import { Agents } from "../agents";
 import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
-import { TextAgent } from "../text-agent";
-import { UIAgent } from "../ui-agent";
 
 interface ActionAgentOptions {
   useCache?: boolean;
@@ -14,36 +10,21 @@ interface ActionAgentOptions {
 
 export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
-  private uiAgent: UIAgent;
-  private dataAgent: DataAgent;
   private context: Record<string, string>;
-  private textAgent: TextAgent;
-  private browserAgent: BrowserAgent;
 
   constructor(
-    private driver: Driver,
+    private agents: Agents,
     options: ActionAgentOptions = {},
   ) {
-    this.uiAgent = new UIAgent(this.driver);
-    this.dataAgent = new DataAgent({ useCache: options.useCache });
-    this.textAgent = new TextAgent({ useCache: options.useCache });
-    this.browserAgent = new BrowserAgent(this.driver, { useCache: options.useCache });
     this.context = {};
   }
 
   async start() {
     this.definedConcepts = loadConcepts();
-    await this.textAgent.start();
-    await this.uiAgent.start();
-    await this.dataAgent.start();
-    await this.browserAgent.start();
   }
 
   async stop() {
     this.context = {};
-    await this.uiAgent.stop();
-    await this.dataAgent.stop();
-    await this.browserAgent.stop();
   }
 
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
@@ -55,31 +36,31 @@ export class ActionAgent implements Agent {
       );
       switch (action.name) {
         case "browser":
-          await this.browserAgent.ask(text);
+          await this.agents.getBrowserAgent().ask(text);
           break;
         case "ai":
-          await this.uiAgent.ai(text);
+          await this.agents.getUIAgent().ai(text);
           break;
         case "aiTap":
-          await this.uiAgent.aiTap(text);
+          await this.agents.getUIAgent().aiTap(text);
           break;
         case "aiInput":
-          await this.uiAgent.aiInput(arg, text);
+          await this.agents.getUIAgent().aiInput(arg, text);
           break;
         case "aiHover":
-          await this.uiAgent.aiHover(text);
+          await this.agents.getUIAgent().aiHover(text);
           break;
         case "aiWaitFor":
-          await this.uiAgent.aiWaitFor(text, { timeoutMs: 30000 });
+          await this.agents.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
           break;
         case "aiKeyboardPress":
-          await this.uiAgent.aiKeyboardPress(text);
+          await this.agents.getUIAgent().aiKeyboardPress(text);
           break;
         case "aiAssert":
-          await this.uiAgent.aiAssert(text);
+          await this.agents.getUIAgent().aiAssert(text);
           break;
         case "data": {
-          const { success, result, error } = await this.dataAgent.ask(text);
+          const { success, result, error } = await this.agents.getDataAgent().ask(text);
           if (success) {
             if (result) {
               this.context = { ...this.context, ...result };
@@ -111,15 +92,7 @@ export class ActionAgent implements Agent {
       return null;
     }
     const behaviorTextList = concept.behaviors.map((b) => b.text);
-    const matchedBehavior = await this.textAgent.find(behaviorTextList, action.text);
+    const matchedBehavior = await this.agents.getTextAgent().find(behaviorTextList, action.text);
     return { behavior: concept.behaviors.find((b) => b.text === matchedBehavior.text), args: matchedBehavior.args };
-  }
-
-  setUIAgent(uiAgent: UIAgent) {
-    this.uiAgent = uiAgent;
-  }
-
-  setDataAgent(dataAgent: DataAgent) {
-    this.dataAgent = dataAgent;
   }
 }

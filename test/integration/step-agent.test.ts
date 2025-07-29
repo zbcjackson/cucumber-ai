@@ -3,18 +3,33 @@ import { StepAgent } from "../../src";
 import "dotenv/config";
 import * as StepLoader from "../../src/loaders/step-loader";
 import { ActionAgent } from "../../src/action-agent";
+import { Agents } from "../../src/agents";
 
 vi.mock("../../src/loaders/step-loader");
 
 describe("Step Agent", () => {
   let stepAgent: StepAgent;
   let actionAgent: ActionAgent;
+  let agents: Agents;
+
   beforeEach(() => {
     actionAgent = {
       start: vi.fn(),
       executeActions: vi.fn(),
     } as unknown as ActionAgent;
-    stepAgent = new StepAgent(actionAgent);
+
+    // Create a mock TextAgent
+    const textAgent = {
+      find: vi.fn(),
+    };
+
+    // Create a mock Agents class
+    agents = {
+      getActionAgent: vi.fn().mockReturnValue(actionAgent),
+      getTextAgent: vi.fn().mockReturnValue(textAgent),
+    } as unknown as Agents;
+
+    stepAgent = new StepAgent(agents);
   });
   afterEach(() => {
     vi.clearAllMocks();
@@ -33,6 +48,11 @@ describe("Step Agent", () => {
         ],
       },
     ]);
+
+    // Mock TextAgent find method
+    const textAgent = agents.getTextAgent();
+    vi.mocked(textAgent.find).mockResolvedValue({ text: "add", args: {} });
+
     await stepAgent.start();
     await stepAgent.executeStep("add");
     expect(actionAgent.executeActions).toHaveBeenCalledWith(
@@ -60,6 +80,11 @@ describe("Step Agent", () => {
         ],
       },
     ]);
+
+    // Mock TextAgent find method
+    const textAgent = agents.getTextAgent();
+    vi.mocked(textAgent.find).mockResolvedValue({ text: "add '{{value}}'", args: { value: "name" } });
+
     await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
     expect(actionAgent.executeActions).toHaveBeenCalledWith(
@@ -87,6 +112,11 @@ describe("Step Agent", () => {
         ],
       },
     ]);
+
+    // Mock TextAgent find method
+    const textAgent = agents.getTextAgent();
+    vi.mocked(textAgent.find).mockResolvedValue({ text: "add '{{value}}'", args: { value: "name" } });
+
     await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
     expect(actionAgent.executeActions).toHaveBeenCalledWith(
@@ -114,6 +144,11 @@ describe("Step Agent", () => {
         ],
       },
     ]);
+
+    // Mock TextAgent find method
+    const textAgent = agents.getTextAgent();
+    vi.mocked(textAgent.find).mockResolvedValue({ text: 'the thought "{{value}}" is shown', args: { value: "name" } });
+
     await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
     expect(actionAgent.executeActions).toHaveBeenCalledWith(
@@ -141,6 +176,11 @@ describe("Step Agent", () => {
         ],
       },
     ]);
+
+    // Mock TextAgent find method
+    const textAgent = agents.getTextAgent();
+    vi.mocked(textAgent.find).mockResolvedValue({ text: 'the thought "{{value}}" is shown', args: { value: "name" } });
+
     await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
     expect(actionAgent.executeActions).toHaveBeenCalledWith(
