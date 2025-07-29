@@ -36,13 +36,13 @@ export function mockContext(): Context {
   const mockBrowserAgent = {
     start: vi.fn().mockResolvedValue(undefined),
     stop: vi.fn().mockResolvedValue(undefined),
-    ask: vi.fn().mockResolvedValue(""),
+    ask: vi.fn().mockResolvedValue({ success: true }),
   } as unknown as BrowserAgent;
 
   const mockDataAgent = {
     start: vi.fn().mockResolvedValue(undefined),
     stop: vi.fn().mockResolvedValue(undefined),
-    ask: vi.fn().mockResolvedValue(""),
+    ask: vi.fn().mockResolvedValue({ success: true }),
   } as unknown as DataAgent;
 
   const mockStepAgent = {
@@ -62,13 +62,13 @@ export function mockContext(): Context {
     start: vi.fn().mockResolvedValue(undefined),
     stop: vi.fn().mockResolvedValue(undefined),
     setDriver: vi.fn().mockResolvedValue(undefined),
-    ai: vi.fn().mockResolvedValue(undefined),
-    aiTap: vi.fn().mockResolvedValue(undefined),
-    aiInput: vi.fn().mockResolvedValue(undefined),
-    aiHover: vi.fn().mockResolvedValue(undefined),
-    aiWaitFor: vi.fn().mockResolvedValue(undefined),
-    aiKeyboardPress: vi.fn().mockResolvedValue(undefined),
-    aiAssert: vi.fn().mockResolvedValue(undefined),
+    ai: vi.fn().mockResolvedValue({ success: true }),
+    aiTap: vi.fn().mockResolvedValue({ success: true }),
+    aiInput: vi.fn().mockResolvedValue({ success: true }),
+    aiHover: vi.fn().mockResolvedValue({ success: true }),
+    aiWaitFor: vi.fn().mockResolvedValue({ success: true }),
+    aiKeyboardPress: vi.fn().mockResolvedValue({ success: true }),
+    aiAssert: vi.fn().mockResolvedValue({ success: true }),
   } as unknown as UIAgent;
 
   // Mock Agents class

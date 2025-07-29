@@ -3,13 +3,16 @@ import { Context } from "../context";
 import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
+import { Actions } from "./actions";
 
 export class ActionAgent implements Agent {
   private definedConcepts: Concept[];
   private actionContext: Record<string, string>;
+  private actions: Actions;
 
   constructor(private context: Context) {
     this.actionContext = {};
+    this.actions = new Actions(context);
   }
 
   async start() {
@@ -27,113 +30,22 @@ export class ActionAgent implements Agent {
       console.log(
         `Executing action: ${action.name} with text: ${text}, arg: ${arg}, context: ${JSON.stringify(this.actionContext)}`,
       );
-      switch (action.name) {
-        case "browser": {
-          const { success, result, error } = await this.context.getBrowserAgent().ask(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`Browser action failed: ${error}`);
+
+      if (this.actions.has(action.name)) {
+        const { success, result, error } = await this.actions.execute(action.name, text, arg, this.actionContext);
+        if (success) {
+          if (result) {
+            this.updateContext(result);
           }
-          break;
+        } else {
+          throw new Error(`${action.name} action failed: ${error}`);
         }
-        case "ai": {
-          const { success, result, error } = await this.context.getUIAgent().ai(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI action failed: ${error}`);
-          }
-          break;
+      } else {
+        const matchedBehavior = await this.findMatchedBehavior({ ...action, text });
+        if (!matchedBehavior || !matchedBehavior.behavior) {
+          throw new Error(`Unknown action: ${action.name}: ${text}`);
         }
-        case "aiTap": {
-          const { success, result, error } = await this.context.getUIAgent().aiTap(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI tap action failed: ${error}`);
-          }
-          break;
-        }
-        case "aiInput": {
-          const { success, result, error } = await this.context.getUIAgent().aiInput(arg, text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI input action failed: ${error}`);
-          }
-          break;
-        }
-        case "aiHover": {
-          const { success, result, error } = await this.context.getUIAgent().aiHover(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI hover action failed: ${error}`);
-          }
-          break;
-        }
-        case "aiWaitFor": {
-          const { success, result, error } = await this.context.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI wait for action failed: ${error}`);
-          }
-          break;
-        }
-        case "aiKeyboardPress": {
-          const { success, result, error } = await this.context.getUIAgent().aiKeyboardPress(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI keyboard press action failed: ${error}`);
-          }
-          break;
-        }
-        case "aiAssert": {
-          const { success, result, error } = await this.context.getUIAgent().aiAssert(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`AI assert action failed: ${error}`);
-          }
-          break;
-        }
-        case "data": {
-          const { success, result, error } = await this.context.getDataAgent().ask(text);
-          if (success) {
-            if (result) {
-              this.updateContext(result);
-            }
-          } else {
-            throw new Error(`Data action failed: ${error}`);
-          }
-          break;
-        }
-        default: {
-          const matchedBehavior = await this.findMatchedBehavior({ ...action, text });
-          if (!matchedBehavior || !matchedBehavior.behavior) {
-            throw new Error(`Unknown action: ${action.name}: ${text}`);
-          }
-          await this.executeActions(matchedBehavior.behavior.actions, matchedBehavior.args);
-        }
+        await this.executeActions(matchedBehavior.behavior.actions, matchedBehavior.args);
       }
     }
   }
