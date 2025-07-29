@@ -7,11 +7,11 @@ import { Concept } from "../loaders/concept-parser";
 import { TextAgent } from "../text-agent";
 import { UIAgent } from "../ui-agent";
 
-interface RunnerOptions {
+interface ActionAgentOptions {
   useCache?: boolean;
 }
 
-export class Runner {
+export class ActionAgent {
   private definedConcepts: Concept[];
   private uiAgent: UIAgent;
   private dataAgent: DataAgent;
@@ -21,7 +21,7 @@ export class Runner {
 
   constructor(
     private driver: Driver,
-    options: RunnerOptions = {},
+    options: ActionAgentOptions = {},
   ) {
     this.uiAgent = new UIAgent(this.driver);
     this.dataAgent = new DataAgent({ useCache: options.useCache });

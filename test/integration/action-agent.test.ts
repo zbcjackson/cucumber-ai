@@ -4,15 +4,15 @@ import "dotenv/config";
 import { Driver } from "../../src";
 import { DataAgent } from "../../src/data-agent";
 import * as ConceptLoader from "../../src/loaders/concept-loader";
-import { Runner } from "../../src/runner";
+import { ActionAgent } from "../../src/action-agent";
 
 vi.mock("../../src/loaders/concept-loader");
 
-describe("Runner", () => {
+describe("ActionAgent", () => {
   let uiAgent: UIAgent;
   let dataAgent: DataAgent;
   let driver: Driver;
-  let runner: Runner;
+  let actionAgent: ActionAgent;
   beforeEach(() => {
     uiAgent = {
       start: vi.fn(),
@@ -31,17 +31,17 @@ describe("Runner", () => {
       ask: vi.fn(),
     } as unknown as DataAgent;
     driver = {} as unknown as Driver;
-    runner = new Runner(driver);
-    runner.setDataAgent(dataAgent);
-    runner.setUIAgent(uiAgent);
+    actionAgent = new ActionAgent(driver);
+    actionAgent.setDataAgent(dataAgent);
+    actionAgent.setUIAgent(uiAgent);
     vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([]);
   });
   afterEach(() => {
     vi.clearAllMocks();
   });
   it("should execute defined steps", async () => {
-    await runner.start();
-    await runner.executeActions([
+    await actionAgent.start();
+    await actionAgent.executeActions([
       {
         name: "ai",
         type: "action",
@@ -51,8 +51,8 @@ describe("Runner", () => {
     expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
   });
   it("should execute defined step with parameter", async () => {
-    await runner.start();
-    await runner.executeActions(
+    await actionAgent.start();
+    await actionAgent.executeActions(
       [
         {
           name: "ai",
@@ -65,8 +65,8 @@ describe("Runner", () => {
     expect(uiAgent.ai).toHaveBeenCalledWith("click add button");
   });
   it("should replace parameter in the action text", async () => {
-    await runner.start();
-    await runner.executeActions(
+    await actionAgent.start();
+    await actionAgent.executeActions(
       [
         {
           name: "ai",
@@ -79,8 +79,8 @@ describe("Runner", () => {
     expect(uiAgent.ai).toHaveBeenCalledWith("input 'name' in the input field");
   });
   it("should match step with same intention", async () => {
-    await runner.start();
-    await runner.executeActions(
+    await actionAgent.start();
+    await actionAgent.executeActions(
       [
         {
           name: "ai",
@@ -112,8 +112,8 @@ describe("Runner", () => {
         ],
       },
     ]);
-    await runner.start();
-    await runner.executeActions(
+    await actionAgent.start();
+    await actionAgent.executeActions(
       [
         {
           name: "MainPage",

@@ -2,7 +2,7 @@ import { World } from "@cucumber/cucumber";
 import type { IWorldOptions } from "@cucumber/cucumber/lib/support_code_library_builder/world";
 import { Driver } from "./drivers/driver";
 import { Action } from "./loaders/action-parser";
-import { Runner } from "./runner";
+import { ActionAgent } from "./action-agent";
 import { StepAgent } from "./step-agent";
 
 export interface Options {
@@ -13,14 +13,14 @@ export interface Options {
 
 export class AgentWorld<T = unknown> extends World<T & Options> {
   private readonly stepAgent: StepAgent;
-  private readonly _runner: Runner;
+  private readonly _actionAgent: ActionAgent;
   private readonly _driver: Driver;
 
   constructor(options: IWorldOptions<T & Options>) {
     super(options);
     this._driver = new Driver();
-    this._runner = new Runner(this.driver);
-    this.stepAgent = new StepAgent(this.runner, {
+    this._actionAgent = new ActionAgent(this.driver);
+    this.stepAgent = new StepAgent(this.actionAgent, {
       useCache: !this.parameters.disableCache,
     });
   }
@@ -29,8 +29,8 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
     return this._driver;
   }
 
-  get runner(): Runner {
-    return this._runner;
+  get actionAgent(): ActionAgent {
+    return this._actionAgent;
   }
 
   async init() {
@@ -38,7 +38,7 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
       headless: this.parameters.headless,
       logging: this.parameters.logging,
     });
-    await this.runner.start();
+    await this.actionAgent.start();
     await this.stepAgent.start();
   }
 
@@ -47,12 +47,12 @@ export class AgentWorld<T = unknown> extends World<T & Options> {
   }
 
   async executeActions(actions: Action[], args: Record<string, string> = {}) {
-    await this.runner.executeActions(actions, args);
+    await this.actionAgent.executeActions(actions, args);
   }
 
   async quit() {
     await this.stepAgent.stop();
-    await this.runner.stop();
+    await this.actionAgent.stop();
     await this.driver.quit();
   }
 }

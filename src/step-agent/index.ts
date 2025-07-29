@@ -1,6 +1,6 @@
 import { loadSteps } from "../loaders/step-loader";
 import { Step } from "../loaders/step-parser";
-import { Runner } from "../runner";
+import { ActionAgent } from "../action-agent";
 import { TextAgent } from "../text-agent";
 
 interface StepAgentOptions {
@@ -12,7 +12,7 @@ export class StepAgent {
   private textAgent: TextAgent;
 
   constructor(
-    private runner: Runner,
+    private actionAgent: ActionAgent,
     options: StepAgentOptions = {},
   ) {
     this.textAgent = new TextAgent({ useCache: options.useCache });
@@ -33,7 +33,7 @@ export class StepAgent {
       throw new Error(`Step not found: ${stepText}`);
     }
 
-    await this.runner.executeActions(match.step.actions, match.args);
+    await this.actionAgent.executeActions(match.step.actions, match.args);
   }
 
   private async findMatchedStep(stepText: string) {

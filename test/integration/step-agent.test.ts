@@ -2,19 +2,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StepAgent } from "../../src";
 import "dotenv/config";
 import * as StepLoader from "../../src/loaders/step-loader";
-import { Runner } from "../../src/runner";
+import { ActionAgent } from "../../src/action-agent";
 
 vi.mock("../../src/loaders/step-loader");
 
 describe("Step Agent", () => {
   let stepAgent: StepAgent;
-  let runner: Runner;
+  let actionAgent: ActionAgent;
   beforeEach(() => {
-    runner = {
+    actionAgent = {
       start: vi.fn(),
       executeActions: vi.fn(),
-    } as unknown as Runner;
-    stepAgent = new StepAgent(runner);
+    } as unknown as ActionAgent;
+    stepAgent = new StepAgent(actionAgent);
   });
   afterEach(() => {
     vi.clearAllMocks();
@@ -35,7 +35,7 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("add");
-    expect(runner.executeActions).toHaveBeenCalledWith(
+    expect(actionAgent.executeActions).toHaveBeenCalledWith(
       [
         {
           name: "ai",
@@ -62,7 +62,7 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
-    expect(runner.executeActions).toHaveBeenCalledWith(
+    expect(actionAgent.executeActions).toHaveBeenCalledWith(
       [
         {
           name: "ai",
@@ -89,7 +89,7 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("add 'name'");
-    expect(runner.executeActions).toHaveBeenCalledWith(
+    expect(actionAgent.executeActions).toHaveBeenCalledWith(
       [
         {
           name: "ai",
@@ -116,7 +116,7 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
-    expect(runner.executeActions).toHaveBeenCalledWith(
+    expect(actionAgent.executeActions).toHaveBeenCalledWith(
       [
         {
           name: "ai",
@@ -143,7 +143,7 @@ describe("Step Agent", () => {
     ]);
     await stepAgent.start();
     await stepAgent.executeStep("it should show the thought 'name'");
-    expect(runner.executeActions).toHaveBeenCalledWith(
+    expect(actionAgent.executeActions).toHaveBeenCalledWith(
       [
         {
           name: "MainPage",
