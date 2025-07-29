@@ -1,28 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
-import { Driver } from "../src";
 import { BrowserAgent } from "../src/browser-agent";
-import { Context } from "../src/context";
+import { Driver } from "../src/drivers/driver";
+import { mockContext } from "./utils";
 
 describe("BrowserAgent", () => {
-  let mockDriver: Driver;
+  let driver: Driver;
   let agent: BrowserAgent;
-  let context: Context;
+  let context: ReturnType<typeof mockContext>;
 
   beforeEach(async () => {
-    mockDriver = {
-      open: vi.fn(),
-      saveScreenshot: vi.fn(),
-      saveVideo: vi.fn(),
-      deleteVideo: vi.fn(),
-      addItemInLocalStorage: vi.fn(),
-      quit: vi.fn(),
-    } as unknown as Driver;
-    context = {
-      getDriver: () => mockDriver,
-      isCacheEnabled: () => false,
-    } as unknown as Context;
-
+    context = mockContext();
+    driver = context.getDriver();
     agent = new BrowserAgent(context);
     await agent.start();
   });
@@ -37,14 +26,14 @@ describe("BrowserAgent", () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toBeUndefined();
-      expect(mockDriver.open).toHaveBeenCalledWith("https://example.com");
+      expect(driver.open).toHaveBeenCalledWith("https://example.com");
     });
 
     it("should handle open operation with different URLs", async () => {
       const result = await agent.ask("Open https://google.com");
 
       expect(result.success).toBe(true);
-      expect(mockDriver.open).toHaveBeenCalledWith("https://google.com");
+      expect(driver.open).toHaveBeenCalledWith("https://google.com");
     });
   });
 
@@ -54,7 +43,7 @@ describe("BrowserAgent", () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toBeUndefined();
-      expect(mockDriver.saveScreenshot).toHaveBeenCalledWith("test-screenshot");
+      expect(driver.saveScreenshot).toHaveBeenCalledWith("test-screenshot");
     });
   });
 
@@ -64,7 +53,7 @@ describe("BrowserAgent", () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toBeUndefined();
-      expect(mockDriver.saveVideo).toHaveBeenCalledWith("test-session");
+      expect(driver.saveVideo).toHaveBeenCalledWith("test-session");
     });
 
     it("should delete video successfully", async () => {
@@ -72,7 +61,7 @@ describe("BrowserAgent", () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toBeUndefined();
-      expect(mockDriver.deleteVideo).toHaveBeenCalled();
+      expect(driver.deleteVideo).toHaveBeenCalled();
     });
   });
 
@@ -82,14 +71,14 @@ describe("BrowserAgent", () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toBeUndefined();
-      expect(mockDriver.addItemInLocalStorage).toHaveBeenCalledWith("user", "john");
+      expect(driver.addItemInLocalStorage).toHaveBeenCalledWith("user", "john");
     });
 
     it("should handle different key-value pairs", async () => {
       const result = await agent.ask("Add a key-value pair to local storage with key 'theme' and value 'dark'");
 
       expect(result.success).toBe(true);
-      expect(mockDriver.addItemInLocalStorage).toHaveBeenCalledWith("theme", "dark");
+      expect(driver.addItemInLocalStorage).toHaveBeenCalledWith("theme", "dark");
     });
   });
 
@@ -99,7 +88,7 @@ describe("BrowserAgent", () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toBeUndefined();
-      expect(mockDriver.quit).toHaveBeenCalled();
+      expect(driver.quit).toHaveBeenCalled();
     });
   });
 });

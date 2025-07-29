@@ -1,14 +1,14 @@
-import { beforeEach, describe, expect, it } from "vitest";
-import { Context } from "../src/context";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DataAgent } from "../src/data-agent";
 import "dotenv/config";
+import { mockContext } from "./utils";
 
 describe.skip("data agent", () => {
   let dataAgent: DataAgent;
+  let context: ReturnType<typeof mockContext>;
+
   beforeEach(() => {
-    const context = {
-      isCacheEnabled: () => false,
-    } as unknown as Context;
+    context = mockContext();
     dataAgent = new DataAgent(context);
   });
   it("should execute query", async () => {

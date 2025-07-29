@@ -1,53 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { UIAgent } from "../src/ui-agent";
 import "dotenv/config";
-import { Driver } from "../src";
 import { ActionAgent } from "../src/action-agent";
-import { Context } from "../src/context";
 import { DataAgent } from "../src/data-agent";
 import * as ConceptLoader from "../src/loaders/concept-loader";
+import { mockContext } from "./utils";
 
 vi.mock("../src/loaders/concept-loader");
 
 describe("ActionAgent", () => {
   let uiAgent: UIAgent;
   let dataAgent: DataAgent;
-  let driver: Driver;
   let actionAgent: ActionAgent;
+  let context: ReturnType<typeof mockContext>;
 
   beforeEach(() => {
-    uiAgent = {
-      start: vi.fn(),
-      setDriver: vi.fn(),
-      ai: vi.fn(),
-      aiTap: vi.fn(),
-      aiInput: vi.fn(),
-      aiHover: vi.fn(),
-      aiWaitFor: vi.fn(),
-      aiKeyboardPress: vi.fn(),
-      aiAssert: vi.fn(),
-    } as unknown as UIAgent;
-    dataAgent = {
-      start: vi.fn(),
-      stop: vi.fn(),
-      ask: vi.fn(),
-    } as unknown as DataAgent;
-    driver = {} as unknown as Driver;
+    context = mockContext();
+    uiAgent = context.getUIAgent();
+    dataAgent = context.getDataAgent();
 
-    // Create a mock Context class
-    const mockContext = {
-      getAgents: vi.fn().mockReturnValue({
-        getUIAgent: vi.fn().mockReturnValue(uiAgent),
-        getDataAgent: vi.fn().mockReturnValue(dataAgent),
-        getTextAgent: vi.fn().mockReturnValue({
-          find: vi
-            .fn()
-            .mockResolvedValue({ text: "Check it shows '{{value}}' in the input field", args: { value: "name" } }),
-        }),
-      }),
-    } as unknown as Context;
+    vi.mocked(context.getTextAgent().find).mockResolvedValue({
+      text: "Check it shows '{{value}}' in the input field",
+      args: { value: "name" },
+    });
 
-    actionAgent = new ActionAgent(mockContext);
+    actionAgent = new ActionAgent(context);
     vi.mocked(ConceptLoader.loadConcepts).mockReturnValue([]);
   });
   afterEach(() => {
