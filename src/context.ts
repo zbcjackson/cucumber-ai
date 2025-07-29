@@ -1,4 +1,5 @@
 import { ActionAgent } from "./action-agent";
+import { ActionProvider } from "./action-agent/action-provider";
 import { Actions } from "./action-agent/actions";
 import { Agents } from "./agents";
 import { BrowserAgent } from "./browser-agent";
@@ -116,49 +117,22 @@ export class Context {
    * Register default actions with the ActionAgent
    */
   private registerDefaultActions(): void {
-    this.actions.register("browser", async (text) => {
-      const { success, result, error } = await this.getBrowserAgent().ask(text);
-      return { success, result, error };
-    });
+    // Register actions from agents that implement ActionProvider
+    const agents = [this.getBrowserAgent(), this.getUIAgent(), this.getDataAgent()];
 
-    this.actions.register("ai", async (text) => {
-      const { success, result, error } = await this.getUIAgent().ai(text);
-      return { success, result, error };
-    });
+    for (const agent of agents) {
+      if (this.isActionProvider(agent)) {
+        agent.registerActions(this.actions);
+      }
+    }
+  }
 
-    this.actions.register("aiTap", async (text) => {
-      const { success, result, error } = await this.getUIAgent().aiTap(text);
-      return { success, result, error };
-    });
-
-    this.actions.register("aiInput", async (text, arg) => {
-      const { success, result, error } = await this.getUIAgent().aiInput(arg, text);
-      return { success, result, error };
-    });
-
-    this.actions.register("aiHover", async (text) => {
-      const { success, result, error } = await this.getUIAgent().aiHover(text);
-      return { success, result, error };
-    });
-
-    this.actions.register("aiWaitFor", async (text) => {
-      const { success, result, error } = await this.getUIAgent().aiWaitFor(text, { timeoutMs: 30000 });
-      return { success, result, error };
-    });
-
-    this.actions.register("aiKeyboardPress", async (text) => {
-      const { success, result, error } = await this.getUIAgent().aiKeyboardPress(text);
-      return { success, result, error };
-    });
-
-    this.actions.register("aiAssert", async (text) => {
-      const { success, result, error } = await this.getUIAgent().aiAssert(text);
-      return { success, result, error };
-    });
-
-    this.actions.register("data", async (text) => {
-      const { success, result, error } = await this.getDataAgent().ask(text);
-      return { success, result, error };
-    });
+  /**
+   * Type guard to check if an agent implements ActionProvider
+   */
+  private isActionProvider(agent: unknown): agent is ActionProvider {
+    return (
+      typeof agent === "object" && agent !== null && typeof (agent as ActionProvider).registerActions === "function"
+    );
   }
 }

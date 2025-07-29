@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import { join } from "node:path";
 import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
+import { ActionProvider } from "../action-agent/action-provider";
+import { Actions } from "../action-agent/actions";
 import { Agent } from "../agent";
 import { Context } from "../context";
 import { LLM } from "../llm/openai";
@@ -12,7 +14,7 @@ interface ToolResult {
 
 type ToolFunction = (args: Record<string, unknown>) => Promise<ToolResult>;
 
-export class BrowserAgent implements Agent {
+export class BrowserAgent implements Agent, ActionProvider {
   private llm: LLM;
   private started: boolean;
   private systemPrompt: string;
@@ -184,6 +186,13 @@ export class BrowserAgent implements Agent {
       systemPrompt: this.systemPrompt,
       cacheKey: "browser-agent",
       tools: this.tools,
+    });
+  }
+
+  public registerActions(actions: Actions): void {
+    actions.register("browser", async (text) => {
+      const result = await this.ask(text);
+      return { success: result.success, result: result.result, error: result.error };
     });
   }
 }

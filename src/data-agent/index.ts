@@ -7,6 +7,8 @@ import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { path as rootPath } from "app-root-path";
 import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
+import { ActionProvider } from "../action-agent/action-provider";
+import { Actions } from "../action-agent/actions";
 import { Agent } from "../agent";
 import { Context } from "../context";
 import { LLM } from "../llm/openai";
@@ -24,7 +26,7 @@ interface Config {
   >;
 }
 
-export class DataAgent implements Agent {
+export class DataAgent implements Agent, ActionProvider {
   private config: Config;
   private clients: Client[] = [];
   private tools: ChatCompletionTool[] = [];
@@ -121,6 +123,13 @@ export class DataAgent implements Agent {
       systemPrompt: this.systemPrompt,
       cacheKey: "data-agent",
       tools: this.tools,
+    });
+  }
+
+  public registerActions(actions: Actions): void {
+    actions.register("data", async (text) => {
+      const result = await this.ask(text);
+      return { success: result.success, result: result.result, error: result.error };
     });
   }
 }
