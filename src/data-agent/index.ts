@@ -5,18 +5,11 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { CallToolResult, CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { path as rootPath } from "app-root-path";
-import {
-  ChatCompletionMessage,
-  ChatCompletionMessageParam,
-  ChatCompletionTool,
-  ChatCompletionMessageToolCall,
-} from "openai/resources/chat/completions/completions";
+import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
 import { Agent } from "../agent";
-import { Cache } from "../cache";
 import { Context } from "../context";
 import { LLM } from "../llm/openai";
-import { parseJson } from "../utils/json";
 
 interface Config {
   mcpServer: Record<
@@ -44,12 +37,10 @@ export class DataAgent implements Agent {
   private toolMap: Record<string, Client> = {};
   private llm: LLM;
   private started: boolean;
-  private cache: Cache;
   private systemPrompt: string;
 
   constructor(private context: Context) {
     this.started = false;
-    this.cache = new Cache();
     const configPath = join(rootPath, "config.json");
     if (fs.existsSync(configPath)) {
       this.config = require(configPath) as Config;
@@ -120,80 +111,22 @@ export class DataAgent implements Agent {
   }
 
   public async ask(prompt: string, opts: { useCache?: boolean } = {}): Promise<Result> {
-    return await this.printElapsedTime(async () => {
-      if (opts.useCache === undefined) {
-        opts.useCache = this.context.isCacheEnabled();
-      }
-      if (opts.useCache && (await this.executeCachedToolCalls(prompt))) {
-        return { success: true };
-      }
-      const messages: Array<ChatCompletionMessageParam> = [
-        {
-          role: "system",
-          content: this.systemPrompt,
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ];
-      let message = await this.llm.ask(messages, this.tools);
-      messages.push(message);
+    const callTool = async (toolCall: ChatCompletionMessageToolCall): Promise<ChatCompletionContentPartText[]> => {
+      const result = CallToolResultSchema.parse(
+        await this.toolMap[toolCall.function.name].callTool({
+          name: toolCall.function.name,
+          arguments: JSON.parse(toolCall.function.arguments),
+        }),
+      );
+      return result.content as ChatCompletionContentPartText[];
+    };
 
-      while (message.tool_calls && message.tool_calls.length > 0) {
-        for (const toolCall of message.tool_calls) {
-          const result = await this.callTool(toolCall);
-
-          messages.push({
-            role: "tool",
-            tool_call_id: toolCall.id,
-            content: result as ChatCompletionContentPartText[],
-          });
-        }
-
-        message = await this.llm.ask(messages, this.tools);
-        messages.push(message);
-      }
-      const result: Result = parseJson(message.content);
-      if (!result.success) {
-        throw new Error(`Data action failed: ${prompt}`);
-      }
-      if (result.success && result.result === undefined) {
-        const toolCalls = messages
-          .filter((m) => m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0)
-          .flatMap((m: ChatCompletionMessage) => m.tool_calls);
-        this.cache.writeCache("data-agent", prompt, toolCalls);
-      }
-      return result;
+    return await this.llm.execute(prompt, {
+      callTool,
+      useCache: opts.useCache ?? this.context.isCacheEnabled(),
+      systemPrompt: this.systemPrompt,
+      cacheKey: "data-agent",
+      tools: this.tools,
     });
-  }
-
-  private async callTool(toolCall: ChatCompletionMessageToolCall): Promise<ChatCompletionContentPartText[]> {
-    const result = CallToolResultSchema.parse(
-      await this.toolMap[toolCall.function.name].callTool({
-        name: toolCall.function.name,
-        arguments: JSON.parse(toolCall.function.arguments),
-      }),
-    );
-    return result.content as ChatCompletionContentPartText[];
-  }
-
-  private async printElapsedTime<T>(func: () => Promise<T>) {
-    const start = Date.now();
-    const result = await func();
-    const elapsed = (Date.now() - start) / 1000;
-    console.log(`Agent task elapsed time: ${elapsed}s`);
-    return result;
-  }
-
-  private async executeCachedToolCalls(prompt: string) {
-    const cachedToolCalls = this.cache.readCache("data-agent", prompt) || [];
-    if (cachedToolCalls.length > 0) {
-      for (const toolCall of cachedToolCalls) {
-        await this.callTool(toolCall);
-      }
-      return true;
-    }
-    return false;
   }
 }

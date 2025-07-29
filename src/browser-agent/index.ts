@@ -1,15 +1,12 @@
 import fs from "node:fs";
 import { join } from "node:path";
 import {
-  ChatCompletionMessage,
-  ChatCompletionMessageParam,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 import { ActionAgent } from "../action-agent";
 import { Agent } from "../agent";
 import { Agents } from "../agents";
-import { Cache } from "../cache";
 import { Context } from "../context";
 import { DataAgent } from "../data-agent";
 import { Driver } from "../drivers/driver";
@@ -17,7 +14,6 @@ import { LLM } from "../llm/openai";
 import { StepAgent } from "../step-agent";
 import { TextAgent } from "../text-agent";
 import { UIAgent } from "../ui-agent";
-import { parseJson } from "../utils/json";
 
 interface Result {
   success: boolean;
@@ -35,7 +31,6 @@ type ToolFunction = (args: Record<string, unknown>) => Promise<ToolResult>;
 export class BrowserAgent implements Agent {
   private llm: LLM;
   private started: boolean;
-  private cache: Cache;
   private systemPrompt: string;
   private tools: ChatCompletionTool[] = [];
   private toolMap: Record<string, ToolFunction> = {};
@@ -44,7 +39,6 @@ export class BrowserAgent implements Agent {
   constructor(context: Context) {
     this.context = context;
     this.started = false;
-    this.cache = new Cache();
     this.llm = new LLM();
   }
 
@@ -193,83 +187,19 @@ export class BrowserAgent implements Agent {
   }
 
   public async ask(prompt: string, opts: { useCache?: boolean } = {}): Promise<Result> {
-    return await this.printElapsedTime(async () => {
-      if (opts.useCache === undefined) {
-        opts.useCache = this.context.isCacheEnabled();
-      }
+    const callTool = async (toolCall: ChatCompletionMessageToolCall): Promise<string> => {
+      const toolName = toolCall.function.name;
+      const args = JSON.parse(toolCall.function.arguments);
 
-      if (opts.useCache && (await this.executeCachedToolCalls(prompt))) {
-        return { success: true };
-      }
+      return JSON.stringify(await this.toolMap[toolName](args));
+    };
 
-      const messages: Array<ChatCompletionMessageParam> = [
-        {
-          role: "system",
-          content: this.systemPrompt,
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ];
-
-      let message = await this.llm.ask(messages, this.tools);
-      messages.push(message);
-
-      while (message.tool_calls && message.tool_calls.length > 0) {
-        for (const toolCall of message.tool_calls) {
-          const result = await this.callTool(toolCall);
-
-          messages.push({
-            role: "tool",
-            tool_call_id: toolCall.id,
-            content: result,
-          });
-        }
-
-        message = await this.llm.ask(messages, this.tools);
-        messages.push(message);
-      }
-
-      const result: Result = parseJson(message.content);
-      if (!result.success) {
-        throw new Error(`Browser action failed: ${prompt}`);
-      }
-
-      if (result.success && result.result === undefined) {
-        const toolCalls = messages
-          .filter((m) => m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0)
-          .flatMap((m: ChatCompletionMessage) => m.tool_calls);
-        this.cache.writeCache("browser-agent", prompt, toolCalls);
-      }
-
-      return result;
+    return await this.llm.execute(prompt, {
+      callTool,
+      useCache: opts.useCache ?? this.context.isCacheEnabled(),
+      systemPrompt: this.systemPrompt,
+      cacheKey: "browser-agent",
+      tools: this.tools,
     });
-  }
-
-  private async callTool(toolCall: ChatCompletionMessageToolCall): Promise<string> {
-    const toolName = toolCall.function.name;
-    const args = JSON.parse(toolCall.function.arguments);
-
-    return JSON.stringify(await this.toolMap[toolName](args));
-  }
-
-  private async printElapsedTime<T>(func: () => Promise<T>) {
-    const start = Date.now();
-    const result = await func();
-    const elapsed = (Date.now() - start) / 1000;
-    console.log(`Browser agent task elapsed time: ${elapsed}s`);
-    return result;
-  }
-
-  private async executeCachedToolCalls(prompt: string) {
-    const cachedToolCalls = this.cache.readCache("browser-agent", prompt) || [];
-    if (cachedToolCalls.length > 0) {
-      for (const toolCall of cachedToolCalls) {
-        await this.callTool(toolCall);
-      }
-      return true;
-    }
-    return false;
   }
 }
