@@ -3,9 +3,9 @@ import path from "node:path";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
 import { Agent } from "../agent";
 import { Cache } from "../cache";
+import { Context } from "../context";
 import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
-import { Context } from "../context";
 
 interface MatchedText {
   text: string;

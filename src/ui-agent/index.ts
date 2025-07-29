@@ -1,13 +1,13 @@
 import { PlaywrightAgent } from "@midscene/web";
-import { Agent } from "../agent";
-import { Context } from "../context";
-import { Driver } from "../drivers/driver";
-import { Agents } from "../agents";
-import { DataAgent } from "../data-agent";
-import { TextAgent } from "../text-agent";
-import { BrowserAgent } from "../browser-agent";
 import { ActionAgent } from "../action-agent";
+import { Agent } from "../agent";
+import { Agents } from "../agents";
+import { BrowserAgent } from "../browser-agent";
+import { Context } from "../context";
+import { DataAgent } from "../data-agent";
+import { Driver } from "../drivers/driver";
 import { StepAgent } from "../step-agent";
+import { TextAgent } from "../text-agent";
 
 export class UIAgent implements Agent {
   private agent: PlaywrightAgent;
