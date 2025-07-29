@@ -1,4 +1,5 @@
 import { ActionAgent } from "./action-agent";
+import { Actions } from "./action-agent/actions";
 import { BrowserAgent } from "./browser-agent";
 import { Context } from "./context";
 import { DataAgent } from "./data-agent";
@@ -13,9 +14,11 @@ export class Agents {
   private readonly stepAgent: StepAgent;
   private readonly textAgent: TextAgent;
   private readonly uiAgent: UIAgent;
+  private readonly context: Context;
   private started = false;
 
   constructor(context: Context) {
+    this.context = context;
     this.textAgent = new TextAgent(context);
     this.uiAgent = new UIAgent(context);
     this.dataAgent = new DataAgent(context);
@@ -24,15 +27,11 @@ export class Agents {
     this.stepAgent = new StepAgent(context);
   }
 
-  /**
-   * Start all agents in the correct order
-   */
   async start(): Promise<void> {
     if (this.started) {
       return;
     }
 
-    // Start agents in dependency order
     await this.textAgent.start();
     await this.uiAgent.start();
     await this.dataAgent.start();
@@ -40,18 +39,16 @@ export class Agents {
     await this.actionAgent.start();
     await this.stepAgent.start();
 
+    this.registerDefaultActions(this.context.getActions());
+
     this.started = true;
   }
 
-  /**
-   * Stop all agents in reverse order
-   */
   async stop(): Promise<void> {
     if (!this.started) {
       return;
     }
 
-    // Stop agents in reverse dependency order
     await this.stepAgent.stop();
     await this.actionAgent.stop();
     await this.browserAgent.stop();
@@ -84,5 +81,11 @@ export class Agents {
 
   getUIAgent(): UIAgent {
     return this.uiAgent;
+  }
+
+  private registerDefaultActions(actions: Actions): void {
+    this.browserAgent.registerActions(actions);
+    this.uiAgent.registerActions(actions);
+    this.dataAgent.registerActions(actions);
   }
 }

@@ -1,5 +1,4 @@
 import { ActionAgent } from "./action-agent";
-import { ActionProvider } from "./action-agent/action-provider";
 import { Actions } from "./action-agent/actions";
 import { Agents } from "./agents";
 import { BrowserAgent } from "./browser-agent";
@@ -102,7 +101,6 @@ export class Context {
       logging: this.isLoggingEnabled(),
     });
     await this.agents.start();
-    this.registerDefaultActions();
   }
 
   /**
@@ -111,28 +109,5 @@ export class Context {
   async quit(): Promise<void> {
     await this.agents.stop();
     await this.driver.quit();
-  }
-
-  /**
-   * Register default actions with the ActionAgent
-   */
-  private registerDefaultActions(): void {
-    // Register actions from agents that implement ActionProvider
-    const agents = [this.getBrowserAgent(), this.getUIAgent(), this.getDataAgent()];
-
-    for (const agent of agents) {
-      if (this.isActionProvider(agent)) {
-        agent.registerActions(this.actions);
-      }
-    }
-  }
-
-  /**
-   * Type guard to check if an agent implements ActionProvider
-   */
-  private isActionProvider(agent: unknown): agent is ActionProvider {
-    return (
-      typeof agent === "object" && agent !== null && typeof (agent as ActionProvider).registerActions === "function"
-    );
   }
 }
