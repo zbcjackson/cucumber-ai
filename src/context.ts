@@ -5,6 +5,7 @@ import { BrowserAgent } from "./browser-agent";
 import { Cache } from "./cache";
 import { DataAgent } from "./data-agent";
 import { Driver } from "./drivers/driver";
+import { LLM } from "./llm/openai";
 import { StepAgent } from "./step-agent";
 import { TextAgent } from "./text-agent";
 import { UIAgent } from "./ui-agent";
@@ -20,11 +21,13 @@ export class Context {
   private readonly agents: Agents;
   private readonly actions: Actions;
   private readonly cache: Cache;
+  private readonly llm: LLM;
 
   constructor(private options: Options = {}) {
     this.driver = new Driver();
     this.actions = new Actions();
     this.cache = new Cache();
+    this.llm = new LLM(this.cache);
     this.agents = new Agents(this);
   }
 
@@ -58,6 +61,10 @@ export class Context {
 
   getUIAgent(): UIAgent {
     return this.agents.getUIAgent();
+  }
+
+  getLLM(): LLM {
+    return this.llm;
   }
 
   getActions(): Actions {

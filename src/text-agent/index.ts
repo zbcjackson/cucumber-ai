@@ -16,7 +16,7 @@ export class TextAgent implements Agent {
   private systemPrompt: string;
 
   constructor(private context: Context) {
-    this.llm = new LLM(context.getCache());
+    this.llm = context.getLLM();
   }
 
   async start() {

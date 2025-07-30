@@ -43,7 +43,7 @@ export class DataAgent implements Agent, ActionProvider {
     } else {
       this.config = { mcpServer: {} };
     }
-    this.llm = new LLM(context.getCache());
+    this.llm = context.getLLM();
   }
 
   public async start() {
