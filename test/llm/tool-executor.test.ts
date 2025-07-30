@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
+import { ChatCompletionMessage } from "openai/resources/chat/completions/completions";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Cache } from "../../src/cache";
 import { LLM } from "../../src/llm/openai";
-import { ToolExecutor, Result } from "../../src/llm/tool-executor";
-import { ChatCompletionMessage } from "openai/resources/chat/completions/completions";
+import { Result, ToolExecutor } from "../../src/llm/tool-executor";
 
 describe("ToolExecutor", () => {
   let toolExecutor: ToolExecutor;

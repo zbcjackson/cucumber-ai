@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
-import { ChatCompletionMessageToolCall, ChatCompletionMessage } from "openai/resources/chat/completions/completions";
+import { ChatCompletionMessage, ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 import { BrowserAgent } from "../src/browser-agent";
-import { ToolExecutor } from "../src/llm/tool-executor";
 import { LLM } from "../src/llm/openai";
+import { ToolExecutor } from "../src/llm/tool-executor";
 import { mockContext } from "./utils";
 
 describe("BrowserAgent with ToolExecutor", () => {
