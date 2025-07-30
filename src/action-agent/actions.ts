@@ -1,5 +1,5 @@
 import { Context } from "../context";
-import { Result } from "../llm/openai";
+import { Result } from "../llm/tool-executor";
 
 export type ActionHandler = (text: string, arg: string | undefined) => Promise<Result>;
 

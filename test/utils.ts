@@ -7,6 +7,7 @@ import { Context } from "../src/context";
 import { DataAgent } from "../src/data-agent";
 import { Driver } from "../src/drivers/driver";
 import { LLM } from "../src/llm/openai";
+import { ToolExecutor } from "../src/llm/tool-executor";
 import { StepAgent } from "../src/step-agent";
 import { TextAgent } from "../src/text-agent";
 import { UIAgent } from "../src/ui-agent";
@@ -31,8 +32,12 @@ export function mockContext(): Context {
   // Mock LLM
   const mockLLM = {
     ask: vi.fn().mockResolvedValue({ content: "mock response" }),
-    execute: vi.fn().mockResolvedValue({ success: true }),
   } as unknown as LLM;
+
+  // Mock ToolExecutor
+  const mockToolExecutor = {
+    execute: vi.fn().mockResolvedValue({ success: true }),
+  } as unknown as ToolExecutor;
 
   // Mock Agents
   const mockActionAgent = {
@@ -96,6 +101,7 @@ export function mockContext(): Context {
   const mockContext = {
     getDriver: vi.fn().mockReturnValue(mockDriver),
     getLLM: vi.fn().mockReturnValue(mockLLM),
+    getToolExecutor: vi.fn().mockReturnValue(mockToolExecutor),
     getActions: vi.fn().mockReturnValue(new Actions()),
     getActionAgent: vi.fn().mockReturnValue(mockActionAgent),
     getBrowserAgent: vi.fn().mockReturnValue(mockBrowserAgent),

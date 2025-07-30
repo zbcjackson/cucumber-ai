@@ -6,6 +6,7 @@ import { Cache } from "./cache";
 import { DataAgent } from "./data-agent";
 import { Driver } from "./drivers/driver";
 import { LLM } from "./llm/openai";
+import { ToolExecutor } from "./llm/tool-executor";
 import { StepAgent } from "./step-agent";
 import { TextAgent } from "./text-agent";
 import { UIAgent } from "./ui-agent";
@@ -22,12 +23,14 @@ export class Context {
   private readonly actions: Actions;
   private readonly cache: Cache;
   private readonly llm: LLM;
+  private readonly toolExecutor: ToolExecutor;
 
   constructor(private options: Options = {}) {
     this.driver = new Driver();
     this.actions = new Actions();
     this.cache = new Cache();
-    this.llm = new LLM(this.cache);
+    this.llm = new LLM();
+    this.toolExecutor = new ToolExecutor(this.llm, this.cache);
     this.agents = new Agents(this);
   }
 
@@ -65,6 +68,10 @@ export class Context {
 
   getLLM(): LLM {
     return this.llm;
+  }
+
+  getToolExecutor(): ToolExecutor {
+    return this.toolExecutor;
   }
 
   getActions(): Actions {

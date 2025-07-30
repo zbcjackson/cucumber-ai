@@ -182,7 +182,7 @@ export class BrowserAgent implements Agent, ActionProvider {
       return JSON.stringify(await this.toolMap[toolName](args));
     };
 
-    return await this.llm.execute(prompt, {
+    return await this.context.getToolExecutor().execute(prompt, {
       callTool,
       useCache: opts.useCache ?? this.context.isCacheEnabled(),
       systemPrompt: this.systemPrompt,

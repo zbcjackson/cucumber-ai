@@ -2,24 +2,24 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
 import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 import { BrowserAgent } from "../src/browser-agent";
-import { LLM } from "../src/llm/openai";
+import { ToolExecutor } from "../src/llm/tool-executor";
 import { mockContext } from "./utils";
 
 describe("BrowserAgent", () => {
   let agent: BrowserAgent;
   let context: ReturnType<typeof mockContext>;
-  let mockLLM: ReturnType<typeof vi.mocked<LLM>>;
+  let mockToolExecutor: ReturnType<typeof vi.mocked<ToolExecutor>>;
   let capturedCallTool: (toolCall: ChatCompletionMessageToolCall) => Promise<string>;
 
   beforeEach(async () => {
     context = mockContext();
-    mockLLM = vi.mocked(context.getLLM());
+    mockToolExecutor = vi.mocked(context.getToolExecutor());
     agent = new BrowserAgent(context);
     await agent.start();
 
     // Capture the callTool function by calling ask first
     await agent.ask("test prompt");
-    const executeCall = vi.mocked(mockLLM.execute).mock.calls[0];
+    const executeCall = vi.mocked(mockToolExecutor.execute).mock.calls[0];
     capturedCallTool = executeCall[1].callTool as (toolCall: ChatCompletionMessageToolCall) => Promise<string>;
   });
 
@@ -33,7 +33,7 @@ describe("BrowserAgent", () => {
 
       await agent.ask(prompt);
 
-      expect(mockLLM.execute).toHaveBeenCalledWith(prompt, {
+      expect(mockToolExecutor.execute).toHaveBeenCalledWith(prompt, {
         callTool: expect.any(Function),
         useCache: false,
         systemPrompt: expect.any(String),
@@ -48,7 +48,7 @@ describe("BrowserAgent", () => {
 
       await agent.ask(prompt);
 
-      expect(mockLLM.execute).toHaveBeenCalledWith(prompt, {
+      expect(mockToolExecutor.execute).toHaveBeenCalledWith(prompt, {
         callTool: expect.any(Function),
         useCache: true,
         systemPrompt: expect.any(String),
@@ -62,7 +62,7 @@ describe("BrowserAgent", () => {
 
       await agent.ask(prompt, { useCache: true });
 
-      expect(mockLLM.execute).toHaveBeenCalledWith(prompt, {
+      expect(mockToolExecutor.execute).toHaveBeenCalledWith(prompt, {
         callTool: expect.any(Function),
         useCache: true,
         systemPrompt: expect.any(String),
@@ -151,7 +151,7 @@ describe("BrowserAgent", () => {
 
   describe("tool setup", () => {
     it("should have correct tool definitions", async () => {
-      const executeCall = vi.mocked(mockLLM.execute).mock.calls[0];
+      const executeCall = vi.mocked(mockToolExecutor.execute).mock.calls[0];
       const tools = executeCall[1].tools;
 
       expect(tools).toHaveLength(6);
@@ -166,7 +166,7 @@ describe("BrowserAgent", () => {
     });
 
     it("should have proper tool structure", async () => {
-      const executeCall = vi.mocked(mockLLM.execute).mock.calls[0];
+      const executeCall = vi.mocked(mockToolExecutor.execute).mock.calls[0];
       const tools = executeCall[1].tools;
 
       const openTool = tools.find((tool: { function: { name: string } }) => tool.function.name === "open");

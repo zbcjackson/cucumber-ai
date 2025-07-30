@@ -119,7 +119,7 @@ export class DataAgent implements Agent, ActionProvider {
       return result.content as ChatCompletionContentPartText[];
     };
 
-    return await this.llm.execute(prompt, {
+    return await this.context.getToolExecutor().execute(prompt, {
       callTool,
       useCache: opts.useCache ?? this.context.isCacheEnabled(),
       systemPrompt: this.systemPrompt,

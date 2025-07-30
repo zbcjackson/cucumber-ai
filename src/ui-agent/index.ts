@@ -3,7 +3,7 @@ import { ActionProvider } from "../action-agent/action-provider";
 import { Actions } from "../action-agent/actions";
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { Result } from "../llm/openai";
+import { Result } from "../llm/tool-executor";
 
 export class UIAgent implements Agent, ActionProvider {
   private agent: PlaywrightAgent;
