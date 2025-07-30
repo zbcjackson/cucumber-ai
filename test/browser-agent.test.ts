@@ -1,192 +1,328 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "dotenv/config";
-import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
+import { ChatCompletionMessageToolCall, ChatCompletionMessage } from "openai/resources/chat/completions/completions";
 import { BrowserAgent } from "../src/browser-agent";
 import { ToolExecutor } from "../src/llm/tool-executor";
+import { LLM } from "../src/llm/openai";
 import { mockContext } from "./utils";
 
-describe("BrowserAgent", () => {
+describe("BrowserAgent with ToolExecutor", () => {
   let agent: BrowserAgent;
   let context: ReturnType<typeof mockContext>;
-  let mockToolExecutor: ReturnType<typeof vi.mocked<ToolExecutor>>;
-  let capturedCallTool: (toolCall: ChatCompletionMessageToolCall) => Promise<string>;
+  let toolExecutor: ToolExecutor;
+  let mockLLM: ReturnType<typeof vi.mocked<LLM>>;
 
   beforeEach(async () => {
     context = mockContext();
-    mockToolExecutor = vi.mocked(context.getToolExecutor());
+    mockLLM = vi.mocked(context.getLLM());
+
+    // Create a real ToolExecutor with mocked LLM and cache
+    toolExecutor = new ToolExecutor(context.getLLM(), context.getCache());
+
+    // Override getToolExecutor to return our real ToolExecutor
+    vi.mocked(context.getToolExecutor).mockReturnValue(toolExecutor);
+
     agent = new BrowserAgent(context);
     await agent.start();
-
-    // Capture the callTool function by calling ask first
-    await agent.ask("test prompt");
-    const executeCall = vi.mocked(mockToolExecutor.execute).mock.calls[0];
-    capturedCallTool = executeCall[1].callTool as (toolCall: ChatCompletionMessageToolCall) => Promise<string>;
   });
 
   afterEach(async () => {
     await agent.stop();
   });
 
-  describe("ask method", () => {
-    it("should call LLM execute with proper parameters", async () => {
-      const prompt = "Open https://example.com";
-
-      await agent.ask(prompt);
-
-      expect(mockToolExecutor.execute).toHaveBeenCalledWith(prompt, {
-        callTool: expect.any(Function),
-        useCache: false,
-        systemPrompt: expect.any(String),
-        cacheKey: "browser-agent",
-        tools: expect.any(Array),
-      });
-    });
-
-    it("should pass cache setting from context", async () => {
-      vi.mocked(context.isCacheEnabled).mockReturnValue(true);
-      const prompt = "Save screenshot test";
-
-      await agent.ask(prompt);
-
-      expect(mockToolExecutor.execute).toHaveBeenCalledWith(prompt, {
-        callTool: expect.any(Function),
-        useCache: true,
-        systemPrompt: expect.any(String),
-        cacheKey: "browser-agent",
-        tools: expect.any(Array),
-      });
-    });
-
-    it("should pass custom cache setting when provided", async () => {
-      const prompt = "Delete video";
-
-      await agent.ask(prompt, { useCache: true });
-
-      expect(mockToolExecutor.execute).toHaveBeenCalledWith(prompt, {
-        callTool: expect.any(Function),
-        useCache: true,
-        systemPrompt: expect.any(String),
-        cacheKey: "browser-agent",
-        tools: expect.any(Array),
-      });
-    });
-  });
-
-  describe("callTool lambda", () => {
-    it("should call the correct tool function with parsed arguments", async () => {
-      const mockToolCall = {
+  describe("open tool", () => {
+    it("should open URL when LLM calls open tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
         id: "call_123",
-        type: "function" as const,
+        type: "function",
         function: {
           name: "open",
           arguments: '{"url": "https://example.com"}',
         },
       };
 
-      await capturedCallTool(mockToolCall);
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "URL opened successfully"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Open https://example.com");
 
       expect(context.getDriver().open).toHaveBeenCalledWith("https://example.com");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
     });
+  });
 
-    it("should handle tool calls with different argument types", async () => {
-      const mockToolCall = {
+  describe("saveScreenshot tool", () => {
+    it("should save screenshot when LLM calls saveScreenshot tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
         id: "call_456",
-        type: "function" as const,
-        function: {
-          name: "addItemInLocalStorage",
-          arguments: '{"key": "user", "value": "john"}',
-        },
-      };
-
-      await capturedCallTool(mockToolCall);
-
-      expect(context.getDriver().addItemInLocalStorage).toHaveBeenCalledWith("user", "john");
-    });
-
-    it("should return JSON stringified result from tool function", async () => {
-      const mockToolCall = {
-        id: "call_789",
-        type: "function" as const,
+        type: "function",
         function: {
           name: "saveScreenshot",
           arguments: '{"name": "test-screenshot"}',
         },
       };
 
-      const result = await capturedCallTool(mockToolCall);
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Screenshot saved"}}',
+        } as unknown as ChatCompletionMessage);
 
-      expect(result).toBe('{"action":"saveScreenshot","details":"Screenshot saved as: test-screenshot.png"}');
+      const result = await agent.ask("Take a screenshot");
+
       expect(context.getDriver().saveScreenshot).toHaveBeenCalledWith("test-screenshot");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
     });
+  });
 
-    it("should handle tool calls with no arguments", async () => {
-      const mockToolCall = {
+  describe("saveVideo tool", () => {
+    it("should save video when LLM calls saveVideo tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_789",
+        type: "function",
+        function: {
+          name: "saveVideo",
+          arguments: '{"name": "test-video"}',
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Video saved"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Save the video");
+
+      expect(context.getDriver().saveVideo).toHaveBeenCalledWith("test-video");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("deleteVideo tool", () => {
+    it("should delete video when LLM calls deleteVideo tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
         id: "call_999",
-        type: "function" as const,
+        type: "function",
+        function: {
+          name: "deleteVideo",
+          arguments: "{}",
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Video deleted"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Delete the video");
+
+      expect(context.getDriver().deleteVideo).toHaveBeenCalled();
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("addItemInLocalStorage tool", () => {
+    it("should add item to local storage when LLM calls addItemInLocalStorage tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_111",
+        type: "function",
+        function: {
+          name: "addItemInLocalStorage",
+          arguments: '{"key": "user", "value": "john"}',
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Item added to local storage"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Add user to local storage");
+
+      expect(context.getDriver().addItemInLocalStorage).toHaveBeenCalledWith("user", "john");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("quit tool", () => {
+    it("should quit browser when LLM calls quit tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_222",
+        type: "function",
         function: {
           name: "quit",
           arguments: "{}",
         },
       };
 
-      const result = await capturedCallTool(mockToolCall);
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Browser closed"}}',
+        } as unknown as ChatCompletionMessage);
 
-      expect(result).toBe('{"action":"quit","details":"Browser closed"}');
+      const result = await agent.ask("Close the browser");
+
       expect(context.getDriver().quit).toHaveBeenCalled();
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
     });
+  });
 
-    it("should throw error for unknown tool function", async () => {
-      const mockToolCall = {
+  describe("multiple tool calls", () => {
+    it("should handle multiple tool calls in sequence", async () => {
+      const mockToolCall1: ChatCompletionMessageToolCall = {
+        id: "call_333",
+        type: "function",
+        function: {
+          name: "open",
+          arguments: '{"url": "https://example.com"}',
+        },
+      };
+
+      const mockToolCall2: ChatCompletionMessageToolCall = {
+        id: "call_444",
+        type: "function",
+        function: {
+          name: "saveScreenshot",
+          arguments: '{"name": "homepage"}',
+        },
+      };
+
+      // Mock LLM to return multiple tool calls
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall1, mockToolCall2],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Multiple actions completed"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Open example.com and take a screenshot");
+
+      expect(context.getDriver().open).toHaveBeenCalledWith("https://example.com");
+      expect(context.getDriver().saveScreenshot).toHaveBeenCalledWith("homepage");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("error handling", () => {
+    it("should handle unknown tool function", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
         id: "call_error",
-        type: "function" as const,
+        type: "function",
         function: {
           name: "unknownTool",
           arguments: '{"param": "value"}',
         },
       };
 
-      await expect(capturedCallTool(mockToolCall)).rejects.toThrow();
-    });
-  });
+      // Mock LLM to return tool call
+      mockLLM.ask.mockResolvedValueOnce({
+        role: "assistant",
+        content: null,
+        tool_calls: [mockToolCall],
+      } as unknown as ChatCompletionMessage);
 
-  describe("tool setup", () => {
-    it("should have correct tool definitions", async () => {
-      const executeCall = vi.mocked(mockToolExecutor.execute).mock.calls[0];
-      const tools = executeCall[1].tools;
-
-      expect(tools).toHaveLength(6);
-
-      const toolNames = tools.map((tool: { function: { name: string } }) => tool.function.name);
-      expect(toolNames).toContain("open");
-      expect(toolNames).toContain("saveScreenshot");
-      expect(toolNames).toContain("saveVideo");
-      expect(toolNames).toContain("deleteVideo");
-      expect(toolNames).toContain("addItemInLocalStorage");
-      expect(toolNames).toContain("quit");
+      await expect(agent.ask("Call unknown tool")).rejects.toThrow();
     });
 
-    it("should have proper tool structure", async () => {
-      const executeCall = vi.mocked(mockToolExecutor.execute).mock.calls[0];
-      const tools = executeCall[1].tools;
-
-      const openTool = tools.find((tool: { function: { name: string } }) => tool.function.name === "open");
-      expect(openTool).toEqual({
+    it("should handle invalid JSON in tool arguments", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_invalid",
         type: "function",
         function: {
           name: "open",
-          description: "Open the specified URL",
-          parameters: {
-            type: "object",
-            properties: {
-              url: {
-                type: "string",
-                description: "URL to open",
-              },
-            },
-            required: ["url"],
-          },
+          arguments: "invalid json",
         },
-      });
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask.mockResolvedValueOnce({
+        role: "assistant",
+        content: null,
+        tool_calls: [mockToolCall],
+      } as unknown as ChatCompletionMessage);
+
+      await expect(agent.ask("Open with invalid args")).rejects.toThrow();
+    });
+  });
+
+  describe("cache integration", () => {
+    it("should use cache when enabled", async () => {
+      vi.mocked(context.isCacheEnabled).mockReturnValue(true);
+      const mockCache = context.getCache();
+
+      // Mock cache to return cached tool calls
+      vi.mocked(mockCache.readCache).mockReturnValue([
+        {
+          id: "cached_call",
+          type: "function",
+          function: {
+            name: "open",
+            arguments: '{"url": "https://cached.com"}',
+          },
+        } as ChatCompletionMessageToolCall,
+      ]);
+
+      const result = await agent.ask("Open cached URL");
+
+      expect(mockCache.readCache).toHaveBeenCalledWith("browser-agent", "Open cached URL");
+      expect(context.getDriver().open).toHaveBeenCalledWith("https://cached.com");
+      expect(result.success).toBe(true);
+      // Should not call LLM when using cache
+      expect(mockLLM.ask).not.toHaveBeenCalled();
     });
   });
 });
