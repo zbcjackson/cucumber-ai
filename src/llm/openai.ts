@@ -17,9 +17,8 @@ export interface Result {
 
 export class LLM {
   private client: OpenAI;
-  private cache: Cache;
 
-  constructor() {
+  constructor(private cache: Cache) {
     this.client = new OpenAI({
       apiKey: process.env.LLM_API_KEY,
       baseURL: process.env.LLM_BASE_URL || "https://api.openai.com/v1",
@@ -28,7 +27,6 @@ export class LLM {
         "X-Title": "cucumber-ai",
       },
     });
-    this.cache = new Cache();
   }
 
   async ask(

@@ -25,7 +25,7 @@ export class BrowserAgent implements Agent, ActionProvider {
   constructor(context: Context) {
     this.context = context;
     this.started = false;
-    this.llm = new LLM();
+    this.llm = new LLM(context.getCache());
   }
 
   public async start() {

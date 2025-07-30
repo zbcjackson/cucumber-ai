@@ -80,6 +80,12 @@ export function mockContext(): Context {
     aiAssert: vi.fn().mockResolvedValue({ success: true }),
   } as unknown as UIAgent;
 
+  // Mock Cache
+  const mockCache = {
+    readCache: vi.fn().mockReturnValue(null),
+    writeCache: vi.fn().mockReturnValue(undefined),
+  };
+
   const mockContext = {
     getDriver: vi.fn().mockReturnValue(mockDriver),
     getActions: vi.fn().mockReturnValue(new Actions()),
@@ -90,6 +96,7 @@ export function mockContext(): Context {
     getStepAgent: vi.fn().mockReturnValue(mockStepAgent),
     getTextAgent: vi.fn().mockReturnValue(mockTextAgent),
     getUIAgent: vi.fn().mockReturnValue(mockUIAgent),
+    getCache: vi.fn().mockReturnValue(mockCache),
     getOptions: vi.fn().mockReturnValue({}),
     getOption: vi.fn().mockReturnValue(undefined),
     isCacheEnabled: vi.fn().mockReturnValue(false),

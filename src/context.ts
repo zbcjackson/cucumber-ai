@@ -2,6 +2,7 @@ import { ActionAgent, ConceptAgent } from "./action-agent";
 import { Actions } from "./action-agent/actions";
 import { Agents } from "./agents";
 import { BrowserAgent } from "./browser-agent";
+import { Cache } from "./cache";
 import { DataAgent } from "./data-agent";
 import { Driver } from "./drivers/driver";
 import { StepAgent } from "./step-agent";
@@ -18,10 +19,12 @@ export class Context {
   private readonly driver: Driver;
   private readonly agents: Agents;
   private readonly actions: Actions;
+  private readonly cache: Cache;
 
   constructor(private options: Options = {}) {
     this.driver = new Driver();
     this.actions = new Actions();
+    this.cache = new Cache();
     this.agents = new Agents(this);
   }
 
@@ -59,6 +62,10 @@ export class Context {
 
   getActions(): Actions {
     return this.actions;
+  }
+
+  getCache(): Cache {
+    return this.cache;
   }
 
   /**

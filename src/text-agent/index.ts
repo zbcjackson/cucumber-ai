@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
 import { Agent } from "../agent";
-import { Cache } from "../cache";
 import { Context } from "../context";
 import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
@@ -14,12 +13,10 @@ interface MatchedText {
 
 export class TextAgent implements Agent {
   private readonly llm: LLM;
-  private readonly cache: Cache;
   private systemPrompt: string;
 
   constructor(private context: Context) {
-    this.llm = new LLM();
-    this.cache = new Cache();
+    this.llm = new LLM(context.getCache());
   }
 
   async start() {
@@ -30,7 +27,7 @@ export class TextAgent implements Agent {
 
   async find(predefinedTextList: string[], text: string) {
     if (this.context.isCacheEnabled()) {
-      const cachedResult = this.cache.readCache("step-agent", this.getCacheKey(predefinedTextList, text));
+      const cachedResult = this.context.getCache().readCache("step-agent", this.getCacheKey(predefinedTextList, text));
       if (cachedResult) {
         return cachedResult;
       }
@@ -48,7 +45,7 @@ export class TextAgent implements Agent {
     const message = await this.llm.ask(messages);
     const result: MatchedText = parseJson(message.content);
     if (Object.keys(result).length > 0) {
-      this.cache.writeCache("step-agent", this.getCacheKey(predefinedTextList, text), result);
+      this.context.getCache().writeCache("step-agent", this.getCacheKey(predefinedTextList, text), result);
     }
     return result;
   }
