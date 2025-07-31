@@ -232,6 +232,11 @@ Check out our [example project](https://github.com/zbcjackson/cucumber-ai-exampl
 - **Midscene**: [Midscene](https://midscenejs.com/)
 - **Examples**: [Cucumber-ai Example Project](https://github.com/zbcjackson/cucumber-ai-example)
 
+## Coming Features
+- Support tables in Gherkin steps
+- Expand `browser` action to include Midscene's browser actions
+- ...
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
