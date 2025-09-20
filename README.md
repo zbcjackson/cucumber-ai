@@ -127,9 +127,13 @@ Concept: MapPage
 ```
 
 **AI Commands**:
-- `browser: action`: Browser-related operations, including: Opening/closing the browser, Managing local storage, Saving/deleting screenshots and video recordings, Other browser-level operations
+- `browser: action`: Browser-related operations with intelligent AI capabilities, including:
+  - **Browser management**: Opening/closing the browser, managing local storage, saving/deleting screenshots and video recordings
+  - **AI-powered interactions**: Click elements, type text, hover, press keys, wait for conditions, and assert page state using natural language descriptions
+  - **Smart element recognition**: Automatically locate elements on the page without requiring selectors
+  - **Example**: `browser: click the submit button and wait for the success message`
 - `data: action`: Data preparation and cleanup operations, including: Preparing test data via API calls, Direct database operations, Cleaning up test data, Requires MCP server configuration to connect to databases or API services
-- `ai: prompt`: AI-powered interactions, including: Analyzing the page and planning actions first, Intelligent element recognition, Handling dynamic page content automatically, Adapting strategies based on context
+- `ai: prompt`: AI-powered interactions for general page analysis and complex actions
 - `aiInput(text): element`: Types text into an element
 - `aiTap: element`: Clicks on an element
 - `aiWaitFor: condition`: Waits for a condition to be met
@@ -211,6 +215,37 @@ Before:
 
 Check out our [example project](https://github.com/zbcjackson/cucumber-ai-example) for more comprehensive examples and use cases.
 
+### Enhanced Browser Actions
+
+The `browser:` action now includes intelligent AI capabilities that can understand complex natural language requests and automatically perform UI interactions:
+
+**Basic Browser Management**:
+```text
+browser: open https://example.com
+browser: save screenshot as "homepage"
+browser: add item to local storage with key "user" and value "john"
+browser: close the browser
+```
+
+**AI-Powered UI Interactions**:
+```text
+browser: click the submit button
+browser: type "john@example.com" in the email field
+browser: hover over the user menu
+browser: press Enter key
+browser: wait for the loading spinner to disappear
+browser: verify that the success message is displayed
+```
+
+**Complex Combined Actions**:
+```text
+browser: fill out the login form with username "admin" and password "secret123"
+browser: click the login button and wait for the dashboard to load
+browser: navigate to the settings page and enable dark mode
+```
+
+The browser action intelligently determines which specific UI operation to perform based on your natural language description, eliminating the need to remember specific action syntax.
+
 ## How It Works
 
 1. **Natural Language Processing**: Cucumber-ai uses AI models to understand your test descriptions
@@ -221,6 +256,7 @@ Check out our [example project](https://github.com/zbcjackson/cucumber-ai-exampl
 
 - **Lower Learning Curve**: Write tests in natural language without deep programming knowledge
 - **Faster Test Creation**: AI handles the implementation details
+- **Simplified Syntax**: Use single `browser:` actions instead of remembering multiple specific commands
 - **Maintainable Tests**: Focus on behavior rather than implementation
 - **Visual Understanding**: AI can see and interact with web pages like a human
 - **Cucumber Compatible**: Works with existing Cucumber workflows and tools
