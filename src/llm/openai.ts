@@ -30,6 +30,7 @@ export class LLM {
       messages,
       tools: tools.length > 0 ? tools : undefined,
       temperature: 0,
+      // For QWen from Aliyun, the response_format may disable tool_calls. DeepSeek v3 from Aliyun works.
       response_format: { type: "json_object" },
     });
     console.log(`Response(${(Date.now() - start) / 1000}s): `, response.choices[0].message);
