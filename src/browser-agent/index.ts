@@ -121,7 +121,8 @@ export class BrowserAgent implements Agent, ActionProvider {
       // UIAgent methods as tools
       {
         name: "ai",
-        description: "Perform general AI-powered action on the page with planning",
+        description:
+          "Perform general AI-powered action on the page for request without specific location or context or no other tool could match the request",
         parameters: {
           type: "object",
           properties: {
