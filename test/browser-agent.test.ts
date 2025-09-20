@@ -411,7 +411,10 @@ describe("BrowserAgent with ToolExecutor", () => {
 
       const result = await agent.ask("Verify login button is visible");
 
-      expect(context.getUIAgent().aiAssert).toHaveBeenCalledWith("login button is visible", "Login button should be visible");
+      expect(context.getUIAgent().aiAssert).toHaveBeenCalledWith(
+        "login button is visible",
+        "Login button should be visible",
+      );
       expect(result.success).toBe(true);
       expect(mockLLM.ask).toHaveBeenCalledTimes(2);
     });
