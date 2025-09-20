@@ -8,4 +8,13 @@ There are only 2 fields allowed:
 * args: An object. The keys are the trimmed text inside double curly braces '{{}}' in the value of the text field. The value of each key is the text you found in the provided text which can match the key.
 
 For example,
+
+If matching text in the list is `["Hello, {{name}}!"]` and the provided text is "Hello, John!", then your response should be:
+{
+  "text": "Hello, {{name}}!",
+  "args": {
+    "name": "John"
+  }
+}
+
 If no match is found, return {}.
