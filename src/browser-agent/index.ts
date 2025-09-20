@@ -118,6 +118,125 @@ export class BrowserAgent implements Agent, ActionProvider {
           properties: {},
         },
       },
+      // UIAgent methods as tools
+      {
+        name: "ai",
+        description: "Perform general AI-powered action on the page with planning",
+        parameters: {
+          type: "object",
+          properties: {
+            prompt: {
+              type: "string",
+              description: "Natural language description of the action to perform",
+            },
+            type: {
+              type: "string",
+              description: "Optional action type",
+            },
+          },
+          required: ["prompt"],
+        },
+      },
+      {
+        name: "aiTap",
+        description: "Click on an element using AI to locate it",
+        parameters: {
+          type: "object",
+          properties: {
+            locatePrompt: {
+              type: "string",
+              description: "Natural language description of the element to click",
+            },
+          },
+          required: ["locatePrompt"],
+        },
+      },
+      {
+        name: "aiInput",
+        description: "Type text into an input field using AI to locate it",
+        parameters: {
+          type: "object",
+          properties: {
+            value: {
+              type: "string",
+              description: "Text to type",
+            },
+            locatePrompt: {
+              type: "string",
+              description: "Natural language description of the input field",
+            },
+          },
+          required: ["value", "locatePrompt"],
+        },
+      },
+      {
+        name: "aiHover",
+        description: "Hover over an element using AI to locate it",
+        parameters: {
+          type: "object",
+          properties: {
+            locatePrompt: {
+              type: "string",
+              description: "Natural language description of the element to hover over",
+            },
+          },
+          required: ["locatePrompt"],
+        },
+      },
+      {
+        name: "aiKeyboardPress",
+        description: "Press keyboard keys, optionally on a specific element",
+        parameters: {
+          type: "object",
+          properties: {
+            key: {
+              type: "string",
+              description: "Key or key combination to press (e.g., 'Enter', 'Ctrl+A')",
+            },
+            locatePrompt: {
+              type: "string",
+              description: "Optional natural language description of the element to focus before pressing keys",
+            },
+          },
+          required: ["key"],
+        },
+      },
+      {
+        name: "aiWaitFor",
+        description: "Wait for a condition to be met on the page",
+        parameters: {
+          type: "object",
+          properties: {
+            prompt: {
+              type: "string",
+              description: "Natural language description of the condition to wait for",
+            },
+            timeoutMs: {
+              type: "number",
+              description: "Timeout in milliseconds (default: 30000)",
+            },
+          },
+          required: ["prompt"],
+        },
+      },
+      {
+        name: "aiAssert",
+        description: "Assert that a condition is true on the page",
+        parameters: {
+          type: "object",
+          properties: {
+            assertion: {
+              type: "string",
+              description: "Natural language description of what should be true",
+            },
+            message: {
+              type: "string",
+              description: "Optional custom error message if assertion fails",
+            },
+          },
+          required: ["assertion"],
+        },
+      },
     ];
 
     this.toolMap = {
@@ -149,6 +268,47 @@ export class BrowserAgent implements Agent, ActionProvider {
       quit: async () => {
         await this.context.getDriver().quit();
         return { action: "quit", details: "Browser closed" };
+      },
+      // UIAgent methods
+      ai: async (args: Record<string, unknown>) => {
+        const prompt = args.prompt as string;
+        const type = args.type as string | undefined;
+        const result = await this.context.getUIAgent().ai(prompt, type);
+        return { action: "ai", details: `AI action completed: ${prompt}` };
+      },
+      aiTap: async (args: Record<string, unknown>) => {
+        const locatePrompt = args.locatePrompt as string;
+        const result = await this.context.getUIAgent().aiTap(locatePrompt);
+        return { action: "aiTap", details: `Clicked on: ${locatePrompt}` };
+      },
+      aiInput: async (args: Record<string, unknown>) => {
+        const value = args.value as string;
+        const locatePrompt = args.locatePrompt as string;
+        const result = await this.context.getUIAgent().aiInput(value, locatePrompt);
+        return { action: "aiInput", details: `Typed "${value}" into: ${locatePrompt}` };
+      },
+      aiHover: async (args: Record<string, unknown>) => {
+        const locatePrompt = args.locatePrompt as string;
+        const result = await this.context.getUIAgent().aiHover(locatePrompt);
+        return { action: "aiHover", details: `Hovered over: ${locatePrompt}` };
+      },
+      aiKeyboardPress: async (args: Record<string, unknown>) => {
+        const key = args.key as string;
+        const locatePrompt = args.locatePrompt as string | undefined;
+        const result = await this.context.getUIAgent().aiKeyboardPress(key, locatePrompt);
+        return { action: "aiKeyboardPress", details: `Pressed "${key}"${locatePrompt ? ` on: ${locatePrompt}` : ""}` };
+      },
+      aiWaitFor: async (args: Record<string, unknown>) => {
+        const prompt = args.prompt as string;
+        const timeoutMs = (args.timeoutMs as number) || 30000;
+        const result = await this.context.getUIAgent().aiWaitFor(prompt, { timeoutMs });
+        return { action: "aiWaitFor", details: `Waited for condition: ${prompt}` };
+      },
+      aiAssert: async (args: Record<string, unknown>) => {
+        const assertion = args.assertion as string;
+        const message = args.message as string | undefined;
+        const result = await this.context.getUIAgent().aiAssert(assertion, message);
+        return { action: "aiAssert", details: `Assertion verified: ${assertion}` };
       },
     };
 

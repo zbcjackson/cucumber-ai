@@ -299,6 +299,124 @@ describe("BrowserAgent with ToolExecutor", () => {
     });
   });
 
+  describe("UIAgent tools", () => {
+    it("should call aiTap when LLM calls aiTap tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_aitap",
+        type: "function",
+        function: {
+          name: "aiTap",
+          arguments: '{"locatePrompt": "submit button"}',
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Element clicked"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Click the submit button");
+
+      expect(context.getUIAgent().aiTap).toHaveBeenCalledWith("submit button");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+
+    it("should call aiInput when LLM calls aiInput tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_aiinput",
+        type: "function",
+        function: {
+          name: "aiInput",
+          arguments: '{"value": "test@example.com", "locatePrompt": "email field"}',
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Text entered"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Enter email address");
+
+      expect(context.getUIAgent().aiInput).toHaveBeenCalledWith("test@example.com", "email field");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+
+    it("should call aiWaitFor when LLM calls aiWaitFor tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_aiwaitfor",
+        type: "function",
+        function: {
+          name: "aiWaitFor",
+          arguments: '{"prompt": "page to load", "timeoutMs": 5000}',
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Condition met"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Wait for the page to load");
+
+      expect(context.getUIAgent().aiWaitFor).toHaveBeenCalledWith("page to load", { timeoutMs: 5000 });
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+
+    it("should call aiAssert when LLM calls aiAssert tool", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_aiassert",
+        type: "function",
+        function: {
+          name: "aiAssert",
+          arguments: '{"assertion": "login button is visible", "message": "Login button should be visible"}',
+        },
+      };
+
+      // Mock LLM to return tool call
+      mockLLM.ask
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: null,
+          tool_calls: [mockToolCall],
+        } as unknown as ChatCompletionMessage)
+        .mockResolvedValueOnce({
+          role: "assistant",
+          content: '{"success": true, "result": {"message": "Assertion passed"}}',
+        } as unknown as ChatCompletionMessage);
+
+      const result = await agent.ask("Verify login button is visible");
+
+      expect(context.getUIAgent().aiAssert).toHaveBeenCalledWith("login button is visible", "Login button should be visible");
+      expect(result.success).toBe(true);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe("cache integration", () => {
     it("should use cache when enabled", async () => {
       vi.mocked(context.isCacheEnabled).mockReturnValue(true);
