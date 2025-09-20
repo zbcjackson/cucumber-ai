@@ -28,7 +28,7 @@ export class LLM {
     const response = await this.client.chat.completions.create({
       model: process.env.LLM_MODEL_NAME,
       messages,
-      tools,
+      tools: tools.length > 0 ? tools : undefined,
       temperature: 0,
     });
     console.log(`Response(${(Date.now() - start) / 1000}s): `, response.choices[0].message);
