@@ -277,6 +277,44 @@ describe("ToolExecutor", () => {
       expect(result).toEqual({ success: true });
       expect(mockLLM.ask).toHaveBeenCalled();
     });
+
+    it("should fall back to normal execution when cached tool call fails", async () => {
+      const mockToolCall: ChatCompletionMessageToolCall = {
+        id: "call_123",
+        type: "function",
+        function: {
+          name: "testTool",
+          arguments: '{"param": "value"}',
+        },
+      };
+
+      vi.mocked(mockCache.readCache).mockReturnValue([mockToolCall]);
+
+      const mockMessage = {
+        content: '{"success": true}',
+        role: "assistant" as const,
+      } as unknown as ChatCompletionMessage;
+
+      vi.mocked(mockLLM.ask).mockResolvedValue(mockMessage);
+
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const mockCallTool = vi.fn().mockRejectedValue(new Error("Cached tool failed"));
+
+      const result = await toolExecutor.execute("test prompt", {
+        callTool: mockCallTool,
+        tools: [],
+        useCache: true,
+        cacheKey: "test-cache",
+      });
+
+      expect(result).toEqual({ success: true });
+      expect(mockCache.readCache).toHaveBeenCalledWith("test-cache", "test prompt");
+      expect(mockCallTool).toHaveBeenCalledWith(mockToolCall);
+      expect(mockLLM.ask).toHaveBeenCalled(); // Should fall back to normal execution
+      expect(consoleSpy).toHaveBeenCalledWith('Cached tool call failed for testTool: Cached tool failed');
+
+      consoleSpy.mockRestore();
+    });
   });
 
   describe("error handling", () => {
@@ -296,7 +334,7 @@ describe("ToolExecutor", () => {
       ).rejects.toThrow();
     });
 
-    it("should handle tool call errors", async () => {
+    it("should handle tool call errors and send them to LLM", async () => {
       const mockToolCall: ChatCompletionMessageToolCall = {
         id: "call_123",
         type: "function",
@@ -312,16 +350,33 @@ describe("ToolExecutor", () => {
         tool_calls: [mockToolCall],
       } as unknown as ChatCompletionMessage;
 
-      vi.mocked(mockLLM.ask).mockResolvedValue(firstMessage);
+      const secondMessage = {
+        content: '{"success": true, "result": {"message": "Handled error successfully"}}',
+        role: "assistant" as const,
+      } as unknown as ChatCompletionMessage;
+
+      vi.mocked(mockLLM.ask)
+        .mockResolvedValueOnce(firstMessage)
+        .mockResolvedValueOnce(secondMessage);
 
       const mockCallTool = vi.fn().mockRejectedValue(new Error("Tool execution failed"));
 
-      await expect(
-        toolExecutor.execute("test prompt", {
-          callTool: mockCallTool,
-          tools: [],
-        }),
-      ).rejects.toThrow("Tool execution failed");
+      const result = await toolExecutor.execute("test prompt", {
+        callTool: mockCallTool,
+        tools: [],
+      });
+
+      expect(result).toEqual({ success: true, result: { message: "Handled error successfully" } });
+      expect(mockCallTool).toHaveBeenCalledWith(mockToolCall);
+      expect(mockLLM.ask).toHaveBeenCalledTimes(2);
+
+      // Verify that the error message was sent to the LLM
+      const secondCall = vi.mocked(mockLLM.ask).mock.calls[1];
+      const messages = secondCall[0];
+      const toolMessage = messages.find((m: any) => m.role === "tool");
+      expect(toolMessage).toBeDefined();
+      expect(toolMessage.content).toBe('Error executing tool "testTool": Tool execution failed');
+      expect(toolMessage.tool_call_id).toBe("call_123");
     });
 
     it("should handle LLM ask errors", async () => {

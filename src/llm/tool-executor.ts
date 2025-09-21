@@ -54,13 +54,23 @@ export class ToolExecutor {
 
       while (message.tool_calls && message.tool_calls.length > 0) {
         for (const toolCall of message.tool_calls) {
-          const result = await callTool(toolCall);
+          try {
+            const result = await callTool(toolCall);
 
-          messages.push({
-            role: "tool",
-            tool_call_id: toolCall.id,
-            content: result,
-          });
+            messages.push({
+              role: "tool",
+              tool_call_id: toolCall.id,
+              content: result,
+            });
+          } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+
+            messages.push({
+              role: "tool",
+              tool_call_id: toolCall.id,
+              content: `Error executing tool "${toolCall.function.name}": ${errorMessage}`,
+            });
+          }
         }
 
         message = await this.llm.ask(messages, tools);
@@ -99,7 +109,13 @@ export class ToolExecutor {
     const cachedToolCalls = this.cache.readCache(cacheKey, prompt) || [];
     if (cachedToolCalls.length > 0) {
       for (const toolCall of cachedToolCalls) {
-        await callTool(toolCall);
+        try {
+          await callTool(toolCall);
+        } catch (error) {
+          // If cached tool call fails, we should not use cache and fall back to normal execution
+          console.warn(`Cached tool call failed for ${toolCall.function.name}: ${error instanceof Error ? error.message : String(error)}`);
+          return false;
+        }
       }
       return true;
     }
