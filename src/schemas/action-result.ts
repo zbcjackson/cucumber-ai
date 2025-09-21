@@ -24,3 +24,8 @@ export const ActionResultSchema = z.object({
 });
 
 export type ActionResult = z.infer<typeof ActionResultSchema>;
+export const actionResultJsonSchema = {
+  name: "ActionResult",
+  schema: z.toJSONSchema(ActionResultSchema),
+  strict: true,
+};
