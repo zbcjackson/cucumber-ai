@@ -23,3 +23,5 @@ If matched text in the list is "I search for {{name}}" and the provided text is 
 }
 
 If no match is found, return {}.
+
+Make sure the text field in your response is exactly the same as the matched text in the list.
