@@ -7,7 +7,7 @@ import {
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
 import { Cache } from "../cache";
 import { parseJson } from "../utils/json";
-import { LLM } from "./openai";
+import { LLM, LLMAskParams } from "./openai";
 
 export interface Result {
   success: boolean;
@@ -49,7 +49,7 @@ export class ToolExecutor {
         },
       ];
 
-      let message = await this.llm.ask(messages, tools);
+      let message = await this.llm.ask({ messages, tools });
       messages.push(message);
 
       while (message.tool_calls && message.tool_calls.length > 0) {
@@ -73,7 +73,7 @@ export class ToolExecutor {
           }
         }
 
-        message = await this.llm.ask(messages, tools);
+        message = await this.llm.ask({ messages, tools });
         messages.push(message);
       }
 

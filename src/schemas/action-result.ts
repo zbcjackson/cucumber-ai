@@ -16,7 +16,10 @@ import { z } from "zod";
 export const ActionResultSchema = z.object({
   success: z.boolean().describe("True if all tasks are successful, false if there are any issues"),
   error: z.string().optional().describe("Error message when success is false"),
-  result: z.record(z.string(), z.string()).optional().describe("Query results with camel case keys when user queries for data"),
+  result: z
+    .record(z.string(), z.string())
+    .optional()
+    .describe("Query results with camel case keys when user queries for data"),
 });
 
 export type ActionResult = z.infer<typeof ActionResultSchema>;

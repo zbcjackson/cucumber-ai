@@ -373,7 +373,8 @@ describe("ToolExecutor", () => {
 
       // Verify that the error message was sent to the LLM
       const secondCall = vi.mocked(mockLLM.ask).mock.calls[1];
-      const messages = secondCall[0];
+      const params = secondCall[0];
+      const messages = params.messages;
       const toolMessage = messages.find((m: ChatCompletionMessageParam) => m.role === "tool");
       expect(toolMessage).toBeDefined();
       expect(toolMessage.content).toBe('Error executing tool "testTool": Tool execution failed');

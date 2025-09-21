@@ -5,6 +5,11 @@ import {
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 
+export interface LLMAskParams {
+  messages: Array<ChatCompletionMessageParam>;
+  tools?: Array<ChatCompletionTool>;
+}
+
 export class LLM {
   private client: OpenAI;
 
@@ -19,10 +24,9 @@ export class LLM {
     });
   }
 
-  async ask(
-    messages: Array<ChatCompletionMessageParam>,
-    tools: Array<ChatCompletionTool> = [],
-  ): Promise<ChatCompletionMessage> {
+  async ask(params: LLMAskParams): Promise<ChatCompletionMessage> {
+    const { messages, tools = [] } = params;
+
     console.log("Request: ", JSON.stringify(messages, null, 2));
     const start = Date.now();
     const response = await this.client.chat.completions.create({

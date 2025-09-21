@@ -3,7 +3,7 @@ import path from "node:path";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { LLM } from "../llm/openai";
+import { LLM, LLMAskParams } from "../llm/openai";
 import { parseJson } from "../utils/json";
 
 interface MatchedText {
@@ -42,7 +42,7 @@ export class TextAgent implements Agent {
         content: `Here is a list of predefined text:\n${predefinedTextList.join("\n")}\n\nFind the predefined text that matches the following text:\n${text}`,
       },
     ];
-    const message = await this.llm.ask(messages);
+    const message = await this.llm.ask({ messages });
     const result: MatchedText = parseJson(message.content);
     if (Object.keys(result).length > 0) {
       this.context.getCache().writeCache("step-agent", this.getCacheKey(predefinedTextList, text), result);
