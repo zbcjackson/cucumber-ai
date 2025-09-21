@@ -1,4 +1,7 @@
-import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
+import {
+  ChatCompletionMessageParam,
+  ChatCompletionMessageToolCall,
+} from "openai/resources/chat/completions/completions";
 import { ChatCompletionMessage } from "openai/resources/chat/completions/completions";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Cache } from "../../src/cache";
@@ -311,7 +314,7 @@ describe("ToolExecutor", () => {
       expect(mockCache.readCache).toHaveBeenCalledWith("test-cache", "test prompt");
       expect(mockCallTool).toHaveBeenCalledWith(mockToolCall);
       expect(mockLLM.ask).toHaveBeenCalled(); // Should fall back to normal execution
-      expect(consoleSpy).toHaveBeenCalledWith('Cached tool call failed for testTool: Cached tool failed');
+      expect(consoleSpy).toHaveBeenCalledWith("Cached tool call failed for testTool: Cached tool failed");
 
       consoleSpy.mockRestore();
     });
@@ -355,9 +358,7 @@ describe("ToolExecutor", () => {
         role: "assistant" as const,
       } as unknown as ChatCompletionMessage;
 
-      vi.mocked(mockLLM.ask)
-        .mockResolvedValueOnce(firstMessage)
-        .mockResolvedValueOnce(secondMessage);
+      vi.mocked(mockLLM.ask).mockResolvedValueOnce(firstMessage).mockResolvedValueOnce(secondMessage);
 
       const mockCallTool = vi.fn().mockRejectedValue(new Error("Tool execution failed"));
 
@@ -373,7 +374,7 @@ describe("ToolExecutor", () => {
       // Verify that the error message was sent to the LLM
       const secondCall = vi.mocked(mockLLM.ask).mock.calls[1];
       const messages = secondCall[0];
-      const toolMessage = messages.find((m: any) => m.role === "tool");
+      const toolMessage = messages.find((m: ChatCompletionMessageParam) => m.role === "tool");
       expect(toolMessage).toBeDefined();
       expect(toolMessage.content).toBe('Error executing tool "testTool": Tool execution failed');
       expect(toolMessage.tool_call_id).toBe("call_123");

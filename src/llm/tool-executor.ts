@@ -113,7 +113,9 @@ export class ToolExecutor {
           await callTool(toolCall);
         } catch (error) {
           // If cached tool call fails, we should not use cache and fall back to normal execution
-          console.warn(`Cached tool call failed for ${toolCall.function.name}: ${error instanceof Error ? error.message : String(error)}`);
+          console.warn(
+            `Cached tool call failed for ${toolCall.function.name}: ${error instanceof Error ? error.message : String(error)}`,
+          );
           return false;
         }
       }
