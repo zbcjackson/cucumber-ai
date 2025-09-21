@@ -54,12 +54,24 @@ MIDSCENE_USE_QWEN_VL=1
 # Language Model (LLM) for other AI tasks
 LLM_API_KEY=your_api_key_here
 LLM_BASE_URL=https://openrouter.ai/api/v1
-LLM_MODEL_NAME=openai/gpt-4o
+LLM_MODEL_NAME=openai/gpt-4.1-nano
 ```
 
-**Note**: For browser automation, we strongly recommend using a Visual Language Model (VLM) like `qwen2.5-vl-72b-instruct` as it can understand and interact with web page elements visually.
+### 2. Model Selection Guide
 
-### 2. Project Structure
+**Visual Language Model (VLM) for Browser Automation**:
+- **Recommended**: `qwen/qwen2.5-vl-72b-instruct` - Excellent visual understanding and web interaction capabilities
+- **Alternative**: `anthropic/claude-3.5-sonnet` - Good vision capabilities but may be more expensive
+- **Requirements**: Must support vision/image processing to see and interact with web pages
+
+**Language Model (LLM) for Text Processing and Tool Calling**:
+- **Recommended**: `openai/gpt-4.1-nano` - Fast, cost-effective with excellent function calling support
+- **Alternative**: `openai/gpt-4o` - More capable but higher cost
+- **Requirements**: **Must support function calling/tools** - This is critical for the browser action system to work properly
+
+**Important**: Ensure your chosen LLM provider supports function calling (also known as tool calling). Without this capability, the enhanced browser actions will not function correctly.
+
+### 3. Project Structure
 
 Create a `features` directory in your project root with the following structure:
 
@@ -74,7 +86,7 @@ features/
 └── *.feature         # Test scenarios in Gherkin format
 ```
 
-### 3. Cucumber configuration
+### 4. Cucumber configuration
 Make sure in the cucumber configuration, two files are required:
 
 - './node_modules/cucumber-ai/dist/ai.steps.js'
