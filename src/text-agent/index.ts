@@ -39,7 +39,7 @@ export class TextAgent implements Agent {
       },
       {
         role: "user",
-        content: `Here is a list of defined text:\n${predefinedTextList.join("\n")}\n\nFind the predefined text that matches the following text:\n${text}`,
+        content: `Here is a list of predefined text:\n${predefinedTextList.join("\n")}\n\nFind the predefined text that matches the following text:\n${text}`,
       },
     ];
     const message = await this.llm.ask(messages);
