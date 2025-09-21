@@ -29,7 +29,8 @@ export class LLM {
   async ask(params: LLMAskParams): Promise<ChatCompletionMessage> {
     const { messages, tools = [], schema } = params;
 
-    console.log("Request: ", JSON.stringify(messages, null, 2));
+    console.log("Request: ");
+    console.dir(messages, { depth: null });
     const start = Date.now();
 
     const responseFormat = schema
@@ -45,7 +46,8 @@ export class LLM {
       // This setting may also affect reasoning of other models, e.g. gpt-4o.
       response_format: responseFormat,
     });
-    console.log(`Response(${(Date.now() - start) / 1000}s): `, response.choices[0].message);
+    console.log(`Response(${(Date.now() - start) / 1000}s): `);
+    console.dir(response.choices[0].message, { depth: null });
 
     return response.choices[0].message;
   }
