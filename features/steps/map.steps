@@ -1,5 +1,5 @@
-Step: I search for "{{name}}"
-    MapPage: search for a location "[[name]]"
+Step: the user search for "{{name}}"
+    MapPage: I search for a location "[[name]]"
 
 Step: I should see the address "{{address}}"
     MapPage: verify the address "[[address]]"
