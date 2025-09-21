@@ -12,3 +12,5 @@ default: &default
     theme:
       "feature keyword": ["magenta", "bold"]
       "scenario keyword": ["red"]
+  worldParameters:
+    disableCache: true
