@@ -4,16 +4,12 @@ import {
   ChatCompletionMessageParam,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
-
-export interface JSONSchemaParam {
-  name: string;
-  schema: { [key: string]: unknown };
-}
+import { ResponseFormatJSONSchema } from "openai/src/resources/shared";
 
 export interface LLMAskParams {
   messages: Array<ChatCompletionMessageParam>;
   tools?: Array<ChatCompletionTool>;
-  schema?: JSONSchemaParam;
+  schema?: ResponseFormatJSONSchema.JSONSchema;
 }
 
 export class LLM {

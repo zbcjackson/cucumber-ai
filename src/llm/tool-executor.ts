@@ -5,9 +5,11 @@ import {
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
+import { z } from "zod";
 import { Cache } from "../cache";
+import { ActionResultSchema } from "../schemas/action-result";
 import { parseJson } from "../utils/json";
-import { LLM, LLMAskParams } from "./openai";
+import { LLM } from "./openai";
 
 export interface Result {
   success: boolean;
@@ -49,7 +51,13 @@ export class ToolExecutor {
         },
       ];
 
-      let message = await this.llm.ask({ messages, tools });
+      const jsonSchema = z.toJSONSchema(ActionResultSchema);
+      const schema = {
+        name: "ActionResult",
+        schema: jsonSchema,
+        strict: true,
+      };
+      let message = await this.llm.ask({ messages, tools, schema: schema });
       messages.push(message);
 
       while (message.tool_calls && message.tool_calls.length > 0) {
@@ -73,7 +81,7 @@ export class ToolExecutor {
           }
         }
 
-        message = await this.llm.ask({ messages, tools });
+        message = await this.llm.ask({ messages, tools, schema });
         messages.push(message);
       }
 
