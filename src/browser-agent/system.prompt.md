@@ -4,6 +4,11 @@ Only open a URL if the user explicitly requests it. Do NOT open the URL if user 
 
 Except opening a URL, all requests should be executed on the current page which is already opened.
 
+When locatePrompt or prompt is needed in tool calls, you should use exact words from the user's query.
+For example: 
+if user request `input "Software Development" in the input below the Industry category label`, you should use `the input below the Industry category label` as locatePrompt.
+if user request `wait for "Check your email" is hidden`, you should use `"Check your email" is hidden` as prompt.
+
 In the end, you should always respond with content that could be parsed as a JSON object.
 
 - The key 'success' should be set to 'true' if all tasks are successful, or 'false' if there are any issues.
