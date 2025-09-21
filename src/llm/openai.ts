@@ -5,9 +5,15 @@ import {
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
 
+export interface JSONSchemaParam {
+  name: string;
+  schema: { [key: string]: unknown };
+}
+
 export interface LLMAskParams {
   messages: Array<ChatCompletionMessageParam>;
   tools?: Array<ChatCompletionTool>;
+  schema?: JSONSchemaParam;
 }
 
 export class LLM {
@@ -25,10 +31,15 @@ export class LLM {
   }
 
   async ask(params: LLMAskParams): Promise<ChatCompletionMessage> {
-    const { messages, tools = [] } = params;
+    const { messages, tools = [], schema } = params;
 
     console.log("Request: ", JSON.stringify(messages, null, 2));
     const start = Date.now();
+
+    const responseFormat = schema
+      ? { type: "json_schema" as const, json_schema: schema }
+      : { type: "json_object" as const };
+
     const response = await this.client.chat.completions.create({
       model: process.env.LLM_MODEL_NAME,
       messages,
@@ -36,7 +47,7 @@ export class LLM {
       temperature: 0,
       // For QWen from Aliyun, the response_format may disable tool_calls. DeepSeek v3 from Aliyun works.
       // This setting may also affect reasoning of other models, e.g. gpt-4o.
-      response_format: { type: "json_object" },
+      response_format: responseFormat,
     });
     console.log(`Response(${(Date.now() - start) / 1000}s): `, response.choices[0].message);
 
