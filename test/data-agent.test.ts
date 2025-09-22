@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { DataAgent } from "../src/data-agent";
 import "dotenv/config";
 import { mockContext } from "./utils";

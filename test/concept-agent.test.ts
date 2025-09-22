@@ -1,4 +1,4 @@
-import { MockedFunction, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockedFunction, vi } from "vitest";
 import "dotenv/config";
 import { ActionHandler } from "../src/action-agent/actions";
 import { ConceptAgent } from "../src/action-agent/concept-agent";
@@ -133,7 +133,7 @@ describe("ConceptAgent", () => {
 
     await conceptAgent.start();
 
-    await expect(conceptAgent.executeBehavior("UnknownConcept", "some text", undefined)).rejects.toThrow(
+    await expect(conceptAgent.executeBehavior("UnknownConcept", "some text")).rejects.toThrow(
       "Unknown concept: UnknownConcept",
     );
   });
@@ -158,7 +158,7 @@ describe("ConceptAgent", () => {
 
     await conceptAgent.start();
 
-    await expect(conceptAgent.executeBehavior("MainPage", "some unmatched text", undefined)).rejects.toThrow(
+    await expect(conceptAgent.executeBehavior("MainPage", "some unmatched text")).rejects.toThrow(
       "No matching behavior found for concept MainPage with text: some unmatched text",
     );
   });

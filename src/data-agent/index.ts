@@ -5,13 +5,15 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { path as rootPath } from "app-root-path";
-import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
-import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
+import { ChatCompletionTool } from "openai/resources/chat/completions/completions";
+import {
+  ChatCompletionContentPartText,
+  ChatCompletionMessageFunctionToolCall,
+} from "openai/src/resources/chat/completions/completions";
 import { ActionProvider } from "../action-agent/action-provider";
 import { Actions } from "../action-agent/actions";
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { LLM } from "../llm/openai";
 
 interface Config {
   mcpServer: Record<
@@ -31,7 +33,6 @@ export class DataAgent implements Agent, ActionProvider {
   private clients: Client[] = [];
   private tools: ChatCompletionTool[] = [];
   private toolMap: Record<string, Client> = {};
-  private llm: LLM;
   private started: boolean;
   private systemPrompt: string;
 
@@ -43,7 +44,6 @@ export class DataAgent implements Agent, ActionProvider {
     } else {
       this.config = { mcpServer: {} };
     }
-    this.llm = context.getLLM();
   }
 
   public async start() {
@@ -109,7 +109,9 @@ export class DataAgent implements Agent, ActionProvider {
   }
 
   public async ask(prompt: string, opts: { useCache?: boolean } = {}) {
-    const callTool = async (toolCall: ChatCompletionMessageToolCall): Promise<ChatCompletionContentPartText[]> => {
+    const callTool = async (
+      toolCall: ChatCompletionMessageFunctionToolCall,
+    ): Promise<ChatCompletionContentPartText[]> => {
       const result = CallToolResultSchema.parse(
         await this.toolMap[toolCall.function.name].callTool({
           name: toolCall.function.name,

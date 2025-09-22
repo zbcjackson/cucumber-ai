@@ -1,6 +1,5 @@
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { Action } from "../loaders/action-parser";
 import { loadConcepts } from "../loaders/concept-loader";
 import { Concept } from "../loaders/concept-parser";
 import { ActionProvider } from "./action-provider";
@@ -22,8 +21,8 @@ export class ConceptAgent implements Agent, ActionProvider {
 
   registerActions(actions: Actions): void {
     for (const concept of this.definedConcepts) {
-      actions.register(concept.name, async (text: string, arg: string | undefined) => {
-        await this.executeBehavior(concept.name, text, arg);
+      actions.register(concept.name, async (text: string) => {
+        await this.executeBehavior(concept.name, text);
         return { success: true };
       });
     }
@@ -35,7 +34,7 @@ export class ConceptAgent implements Agent, ActionProvider {
     }
   }
 
-  async executeBehavior(conceptName: string, text: string, arg: string | undefined) {
+  async executeBehavior(conceptName: string, text: string) {
     const concept = this.definedConcepts.find((c) => c.name === conceptName);
     if (!concept) {
       throw new Error(`Unknown concept: ${conceptName}`);

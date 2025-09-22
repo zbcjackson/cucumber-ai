@@ -14,11 +14,9 @@ export class Agents {
   private readonly stepAgent: StepAgent;
   private readonly textAgent: TextAgent;
   private readonly uiAgent: UIAgent;
-  private readonly context: Context;
   private started = false;
 
   constructor(context: Context) {
-    this.context = context;
     this.textAgent = new TextAgent(context);
     this.uiAgent = new UIAgent(context);
     this.dataAgent = new DataAgent(context);

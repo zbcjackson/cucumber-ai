@@ -1,4 +1,4 @@
-import { type Browser, type BrowserContext, type Page, chromium } from "playwright";
+import { type Browser, type BrowserContext, chromium, type Page } from "playwright";
 import type { DriverOptions } from "./options";
 
 export class Driver {
@@ -18,9 +18,9 @@ export class Driver {
       headless: options?.headless ?? false,
       timeout: this.timeout,
       logger: {
-        isEnabled: (name: string, severity: "verbose" | "info" | "warning" | "error"): boolean =>
+        isEnabled: (_name: string, _severity: "verbose" | "info" | "warning" | "error"): boolean =>
           options?.logging ?? false,
-        log: (name: string, severity: "verbose" | "info" | "warning" | "error", message: string | Error): void => {
+        log: (name: string, _severity: "verbose" | "info" | "warning" | "error", message: string | Error): void => {
           console.log(`${name} ${message}`);
         },
       },

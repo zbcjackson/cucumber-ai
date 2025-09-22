@@ -1,9 +1,9 @@
-import { MockedFunction, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, MockedFunction, vi } from "vitest";
 import "dotenv/config";
 import { ActionAgent } from "../src/action-agent";
 import { ActionHandler } from "../src/action-agent/actions";
-import { Result } from "../src/llm/openai";
 import * as ConceptLoader from "../src/loaders/concept-loader";
+import { ActionResult } from "../src/schemas/action-result";
 import { mockContext } from "./utils";
 
 vi.mock("../src/loaders/concept-loader");
@@ -15,7 +15,7 @@ describe("ActionAgent", () => {
 
   beforeEach(() => {
     context = mockContext();
-    aiAction = vi.fn().mockResolvedValue({ success: true } as Result);
+    aiAction = vi.fn().mockResolvedValue({ success: true } as ActionResult);
     context.getActions().register("ai", aiAction);
 
     vi.mocked(context.getTextAgent().find).mockResolvedValue({

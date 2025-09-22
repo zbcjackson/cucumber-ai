@@ -1,5 +1,5 @@
 import { loadDefinitions } from "./definition-loader";
-import { Step, parseStepDefinitions } from "./step-parser";
+import { parseStepDefinitions, Step } from "./step-parser";
 
 export function loadSteps(path?: string): Step[] {
   return loadDefinitions({

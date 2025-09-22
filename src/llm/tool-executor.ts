@@ -4,10 +4,12 @@ import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources/chat/completions/completions";
-import { ChatCompletionContentPartText } from "openai/src/resources/chat/completions/completions";
-import { z } from "zod";
+import {
+  ChatCompletionContentPartText,
+  ChatCompletionMessageFunctionToolCall,
+} from "openai/src/resources/chat/completions/completions";
 import { Cache } from "../cache";
-import { ActionResultSchema, actionResultJsonSchema } from "../schemas/action-result";
+import { actionResultJsonSchema } from "../schemas/action-result";
 import { parseJson } from "../utils/json";
 import { LLM } from "./openai";
 
@@ -55,7 +57,7 @@ export class ToolExecutor {
       messages.push(message);
 
       while (message.tool_calls && message.tool_calls.length > 0) {
-        for (const toolCall of message.tool_calls) {
+        for (const toolCall of message.tool_calls as ChatCompletionMessageFunctionToolCall[]) {
           try {
             const result = await callTool(toolCall);
 

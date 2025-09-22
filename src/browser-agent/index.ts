@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import { join } from "node:path";
-import { ChatCompletionMessageToolCall, ChatCompletionTool } from "openai/resources/chat/completions/completions";
+import { ChatCompletionTool } from "openai/resources/chat/completions/completions";
+import { ChatCompletionMessageFunctionToolCall } from "openai/src/resources/chat/completions/completions";
 import { ActionProvider } from "../action-agent/action-provider";
 import { Actions } from "../action-agent/actions";
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { LLM } from "../llm/openai";
 
 interface ToolResult {
   action: string;
@@ -15,7 +15,6 @@ interface ToolResult {
 type ToolFunction = (args: Record<string, unknown>) => Promise<ToolResult>;
 
 export class BrowserAgent implements Agent, ActionProvider {
-  private llm: LLM;
   private started: boolean;
   private systemPrompt: string;
   private tools: ChatCompletionTool[] = [];
@@ -25,7 +24,6 @@ export class BrowserAgent implements Agent, ActionProvider {
   constructor(context: Context) {
     this.context = context;
     this.started = false;
-    this.llm = context.getLLM();
   }
 
   public async start() {
@@ -274,41 +272,41 @@ export class BrowserAgent implements Agent, ActionProvider {
       ai: async (args: Record<string, unknown>) => {
         const prompt = args.prompt as string;
         const type = args.type as string | undefined;
-        const result = await this.context.getUIAgent().ai(prompt, type);
+        await this.context.getUIAgent().ai(prompt, type);
         return { action: "ai", details: `AI action completed: ${prompt}` };
       },
       aiTap: async (args: Record<string, unknown>) => {
         const locatePrompt = args.locatePrompt as string;
-        const result = await this.context.getUIAgent().aiTap(locatePrompt);
+        await this.context.getUIAgent().aiTap(locatePrompt);
         return { action: "aiTap", details: `Clicked on: ${locatePrompt}` };
       },
       aiInput: async (args: Record<string, unknown>) => {
         const value = args.value as string;
         const locatePrompt = args.locatePrompt as string;
-        const result = await this.context.getUIAgent().aiInput(value, locatePrompt);
+        await this.context.getUIAgent().aiInput(value, locatePrompt);
         return { action: "aiInput", details: `Typed "${value}" into: ${locatePrompt}` };
       },
       aiHover: async (args: Record<string, unknown>) => {
         const locatePrompt = args.locatePrompt as string;
-        const result = await this.context.getUIAgent().aiHover(locatePrompt);
+        await this.context.getUIAgent().aiHover(locatePrompt);
         return { action: "aiHover", details: `Hovered over: ${locatePrompt}` };
       },
       aiKeyboardPress: async (args: Record<string, unknown>) => {
         const key = args.key as string;
         const locatePrompt = args.locatePrompt as string | undefined;
-        const result = await this.context.getUIAgent().aiKeyboardPress(key, locatePrompt);
+        await this.context.getUIAgent().aiKeyboardPress(key, locatePrompt);
         return { action: "aiKeyboardPress", details: `Pressed "${key}"${locatePrompt ? ` on: ${locatePrompt}` : ""}` };
       },
       aiWaitFor: async (args: Record<string, unknown>) => {
         const prompt = args.prompt as string;
         const timeoutMs = (args.timeoutMs as number) || 30000;
-        const result = await this.context.getUIAgent().aiWaitFor(prompt, { timeoutMs });
+        await this.context.getUIAgent().aiWaitFor(prompt, { timeoutMs });
         return { action: "aiWaitFor", details: `Waited for condition: ${prompt}` };
       },
       aiAssert: async (args: Record<string, unknown>) => {
         const assertion = args.assertion as string;
         const message = args.message as string | undefined;
-        const result = await this.context.getUIAgent().aiAssert(assertion, message);
+        await this.context.getUIAgent().aiAssert(assertion, message);
         return { action: "aiAssert", details: `Assertion verified: ${assertion}` };
       },
     };
@@ -336,7 +334,7 @@ export class BrowserAgent implements Agent, ActionProvider {
   }
 
   public async ask(prompt: string, opts: { useCache?: boolean } = {}) {
-    const callTool = async (toolCall: ChatCompletionMessageToolCall): Promise<string> => {
+    const callTool = async (toolCall: ChatCompletionMessageFunctionToolCall): Promise<string> => {
       const toolName = toolCall.function.name;
       const args = JSON.parse(toolCall.function.arguments);
 

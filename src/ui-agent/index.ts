@@ -7,20 +7,17 @@ import { Result } from "../llm/tool-executor";
 
 export class UIAgent implements Agent, ActionProvider {
   private agent: PlaywrightAgent;
-  private started = false;
 
   constructor(private context: Context) {}
 
   async start() {
     this.agent = new PlaywrightAgent(this.context.getDriver().page);
     this.registerActions(this.context.getActions());
-    this.started = true;
   }
 
   async stop() {
     this.unregisterActions(this.context.getActions());
     this.agent = null;
-    this.started = false;
   }
 
   private async agentMethod(method: string, ...args): Promise<Result> {

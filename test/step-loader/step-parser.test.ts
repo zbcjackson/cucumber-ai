@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { Step, parseStepDefinitions } from "../../src/loaders/step-parser";
+import { parseStepDefinitions, Step } from "../../src/loaders/step-parser";
 
 function testStepParser(stepDefinitions: string, expected: Step[]) {
   return () => {

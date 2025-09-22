@@ -1,6 +1,5 @@
 import { World } from "@cucumber/cucumber";
 import type { IWorldOptions } from "@cucumber/cucumber/lib/support_code_library_builder/world";
-import { Agents } from "./agents";
 import { Context } from "./context";
 import { Driver } from "./drivers/driver";
 import { Action } from "./loaders/action-parser";

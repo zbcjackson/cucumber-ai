@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import { vol } from "memfs";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { loadSteps } from "../../src/loaders/step-loader";
 
 const mocks = vi.hoisted(() => {

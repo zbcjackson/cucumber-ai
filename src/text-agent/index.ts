@@ -3,7 +3,7 @@ import path from "node:path";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions/completions";
 import { Agent } from "../agent";
 import { Context } from "../context";
-import { LLM, LLMAskParams } from "../llm/openai";
+import { LLM } from "../llm/openai";
 import { parseJson } from "../utils/json";
 
 interface MatchedText {

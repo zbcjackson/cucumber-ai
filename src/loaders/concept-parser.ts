@@ -1,5 +1,4 @@
-import { parseAction } from "./action-parser";
-import { Action } from "./action-parser";
+import { Action, parseAction } from "./action-parser";
 
 export interface Concept {
   name: string;
