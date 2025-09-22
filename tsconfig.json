@@ -9,6 +9,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
+    "lib": ["ES2022"],
     "sourceMap": true,
     "outDir": "./dist",
     "declarationDir": "./dist",
