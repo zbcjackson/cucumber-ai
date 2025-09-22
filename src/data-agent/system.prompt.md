@@ -65,11 +65,14 @@ Always respond with this JSON structure:
 ```
 
 ### When to Include `result`:
+- **IMPORTANT**: If user queries for something (asks to get, find, retrieve, check, or obtain information), the key 'result' must be set with a JSON object
+- **Result Key Naming**: The key should be the name of the result using camelCase (e.g., `userCount`, `emailList`, `apiStatus`)
 - **Data Retrieval Operations**: Any tool that returns data, information, or computed values
 - **Query Operations**: Tools that fetch, search, or lookup information
 - **Status/Info Operations**: Tools that return status, configuration, or metadata
 
 ### When to Omit `result`:
+- **IMPORTANT**: If user requests an action (not a query), the key 'result' should NOT be set
 - **Action Operations**: Tools that perform actions, modifications, or commands without returning data
 - **Mutation Operations**: Create, update, delete operations that only indicate success/failure
 - **Trigger Operations**: Tools that initiate processes or send notifications
@@ -84,25 +87,36 @@ For complex requests requiring multiple tools:
 
 ## Response Examples
 
-### Successful Data Retrieval:
+### User Queries (Include `result`):
+**User asks**: `"get user count in the database?"`
 ```json
 {
   "success": true,
   "result": {
-    "count": "42",
-    "status": "active"
+    "userCount": "42"
   }
 }
 ```
 
-### Successful Action:
+**User asks**: `"Get the verification code from latest email"`
+```json
+{
+  "success": true,
+  "result": {
+    "verificationCode": "SX6UI0"
+  }
+}
+```
+
+### User Actions (Omit `result`):
+**User asks**: `"Create a new user account"`
 ```json
 {
   "success": true
 }
 ```
 
-### Multi-Step Operation:
+### Multi-Step Operation with Query:
 ```json
 {
   "success": true,
