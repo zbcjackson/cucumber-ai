@@ -34,26 +34,26 @@
   },
   "dependencies": {
     "@cucumber/cucumber": "^12.2.0",
-    "@cucumber/pretty-formatter": "^2.3.0",
-    "@midscene/web": "^0.28.10",
-    "@modelcontextprotocol/sdk": "^1.18.1",
-    "@playwright/test": "^1.55.0",
+    "@cucumber/pretty-formatter": "^2.4.1",
+    "@midscene/web": "^0.30.8",
+    "@modelcontextprotocol/sdk": "^1.21.1",
+    "@playwright/test": "^1.56.1",
     "app-root-path": "^3.1.0",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "glob": "^11.0.3",
-    "openai": "^5.22.0",
-    "playwright": "^1.55.0",
-    "zod": "^4.1.11"
+    "openai": "^6.8.1",
+    "playwright": "^1.56.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
-    "@types/node": "^24.5.2",
+    "@biomejs/biome": "^2.3.4",
+    "@types/node": "^24.10.0",
     "cpx": "^1.5.0",
-    "memfs": "^4.43.0",
+    "memfs": "^4.50.0",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.5",
-    "typescript": "5.9.2",
-    "vitest": "^3.2.4"
+    "tsx": "^4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "^4.0.8"
   },
   "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }
