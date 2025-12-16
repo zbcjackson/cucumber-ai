@@ -47,7 +47,7 @@ jobs:
         with:
           run_install: |
             - recursive: true
-            - args: [--global, "npm"]
+            - args: [--global, "npm@latest"]
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
