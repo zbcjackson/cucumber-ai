@@ -3,6 +3,9 @@
   "version": "0.9.45",
   "description": "Write automated tests using natural language",
   "homepage": "https://github.com/zbcjackson/cucumber-ai",
+  "repository": {
+    "url": "https://github.com/zbcjackson/cucumber-ai"
+  },
   "keywords": [
     "cucumber",
     "ai",
